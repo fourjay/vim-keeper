@@ -32,8 +32,16 @@ function! s:InlineHelp(...)
     " load the helpfile in a buffer
     let external_help = system(  help_program . " " . keyword )
     " open split with reasonable height
+    let helpbufname = "__HELP__"
     let large_height = &lines * 2 / 3
-    execute large_height . "split __HELP__" 
+    " reuse buffer as available
+
+    let winnr = bufwinnr(helpbufname)
+    if winnr > 0
+        execute winnr . "wincmd w"
+    else
+        execute large_height . "split " helpbufname
+    endif
     " set up clean buffer
     normal! ggdG
     setlocal filetype=man
@@ -46,5 +54,6 @@ function! s:InlineHelp(...)
     let @/ = keyword
 endfunction
 nnoremap KK :call <SID>InlineHelp()<CR>
-command! -nargs=1 WebMan call <SID>InlineHelp(<f-args>)
+"command! -nargs=1 WebMan call <SID>InlineHelp(<f-args>)
+command! -nargs=1 Help call <SID>InlineHelp(<f-args>)
 
