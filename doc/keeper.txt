@@ -1,0 +1,13 @@
+*keeper.txt* Integrated documentation viewer
+
+INTRODUCTION                                *keeper*
+
+Keywordprg is useful, but hasn't aged well. It works well for C
+and for shell scripts, but rarely used in any other context.
+Shelling out is also awkward, typical workflow might well involve
+several screen flips (triggering the keywordprg each time). The
+documentation is not easily copied and manipulated with vim tools.
+And finally it's awkward in one of the most common scenarios, writing
+new code, exploring keywords that are not already typed on the page.
+
+
