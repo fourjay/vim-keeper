@@ -20,7 +20,7 @@ function! s:InlineHelp(...)
     " Get the plugins external shell script
     let help_program = s:base_path . "/../webman.sh  -s" . &filetype
     " Allow user settings for keywordprg to override webman
-    if &keywordprg !~ "^man"
+    if &keywordprg !~ "^man" && executable( &keywordprg )
         let help_program = &keywordprg
     else
         " but keep man for these filetypes
