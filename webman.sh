@@ -2,32 +2,40 @@
 
 print_help() {
     cat <<HELP_BOUNDARY
-USAGE $(basename $0) [-s SYNTAX] keyword
+NAME
+    $(basename $0)
 
-Looks up keyword with an available text browser in an appropriate web source
+SYNOPSIS
+    $(basename $0) [-h] [-s syntax_name ]
+
+DESCRIPTION
+    Return a (partially) reformatted text lookup
+
+OPTIONS
+    -h
+        print help
 
     -s [SYNTAX]
         specify the type (implicly changing the URL and cleanup)
 
-    -n
-        no pager
+    -b [browser]
+        specify browser
 
-    -h
-        print this help
+BUGS
+    Almost certainly
 
 HELP_BOUNDARY
     exit
 }
 
-PAGER=
 syntax=php
 
-while getopts s:nh? OPT
+while getopts s:b:h? OPT
 do
     case $OPT in
-        s) syntax=$OPTARG ;;
-        n) PAGER="tee"    ;;
-        h) print_help     ;;
+        s) syntax=$OPTARG  ;;
+        b) browser=$OPTARG ;;
+        h) print_help      ;;
     esac
 done
 shift $(($OPTIND - 1))
@@ -95,22 +103,14 @@ clean_mdn_output() {
 live_lookup() {
     local URL="$1"
     local program=$( echo $browser | sed 's/[ ].*//' )
-    ${program} ${URL}
+    ${program} "${URL}"
 }
 
 lookup() {
     echo "LOOKING UP '${search_term}' with $1"
     echo "-----------------------------------"
     local URL="$1"
-    $browser "$URL"
-}
-
-page_output() {
-    if [ -z "$PAGER" ]; then
-        less -p${search_term}
-    else
-        tee
-    fi
+    timeout 5 $browser "$URL"
 }
 
 MDN__BASE_URL="https://developer.mozilla.org/en-US"
@@ -119,51 +119,65 @@ GOOGLE_LUCKY_URL="http://www.google.com/search?&sourceid=navclient&btnI=I&q="
 
 case $syntax in
     php)
-        PHP_MAN_URL="http://us.php.net/manual/en/print/function"
-        lookup ${PHP_MAN_URL}.${search_term}.php        |
-            sed -n '/Description/,/Contributed Notes/p' | # skip the non-content
-            clean_output                                |
-            page_output
+        lookup "${GOOGLE_LUCKY_URL}site:us.php.net+${search_term}" |
+              sed -n '/Description/,/Contributed Notes/p' | # skip the non-content
+              clean_output
         ;;
     css)
         CSS_MAN_URL="http://cssdocs.org/"
-        #lookup ${CSS_MAN_URL}${search_term} |
-        lookup ${GOOGLE_LUCKY_URL}site:cssdocs.org+${search_term} |
-            clean_output                    |
-            page_output
+        lookup "${GOOGLE_LUCKY_URL}site:cssdocs.org+${search_term}" |
+            clean_output
         ;;
     javascript)
         lookup "${GOOGLE_LUCKY_URL}site:developer.mozilla.org+javascript+${search_term}" |
             clean_mdn_output |
-            clean_output     |
-            page_output
+            clean_output
         ;;
     html)
         lookup "${MDN__BASE_URL}/docs/Web/HTML/Element/${search_term}" |
             sed -n '/^Summary/,/^Contributors/p' |
-            clean_output                         |
-            page_output
+            clean_output
         ;;
-    text)
+    mail|text)
         DICT="http://m.dictionary.com/definition"
         lookup "${DICT}/${search_term}"   |
             sed "1,/${search_term}LINK/d" |
-            sed '/^Share:LINK/,$ d'       |
-            page_output
+            sed '/^Share:LINK/,$ d'
         ;;
     apache)
         lookup "${GOOGLE_LUCKY_URL}site:httpd.apache.org+${search_term}"   |
             clean_output                    |
             sed '/^[ ]*top[ ]*$/ d'         |
             sed '/^Available Languages:/ d' |
-            sed '/\[down\]/ d'              |
-            page_output
+            sed '/\[down\]/ d'
         ;;
+    wiki)
+        lookup "${GOOGLE_LUCKY_URL}site:wikipedia.org+${search_term}"   |
+            sed -e '/^From Wikipedia/ d'  \
+                -e '/^Jump to/ d'         \
+                -e '/\[down\]/ d'         \
+                -e 's/\[[0-9]*\]//g'      \
+                -e 's/\[[0-9]*px.*\]//'   \
+                -e 's/\[edit\]//'         |
+                clean_output
+        ;;
+    git*)
+        lookup "${GOOGLE_LUCKY_URL}site:git-scm.com+${search_term}"   |
+            sed -e '/^Git --/,/Index of Commands/ d' \
+                -e '/\[[0-9]*fig[0-9]*\]/ d' |
+            clean_output
+        ;;
+    sql*)
+        # it's cross db....
+        lookup "${GOOGLE_LUCKY_URL}site:www.w3schools.com+${search_term}+sql"   |
+            sed -e '/^Your suggestion/,$ d' \
+                -e '1,/^SQL Quiz/ d' |
+            clean_output
+        ;;
+
     *)
         lookup "${GOOGLE_LUCKY_URL}${syntax}+language+reference+${search_term}" |
-            clean_output |
-            page_output
+            clean_output
 
 esac
-
 
