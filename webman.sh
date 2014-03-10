@@ -110,12 +110,12 @@ lookup() {
     echo "LOOKING UP '${search_term}' with $1"
     echo "-----------------------------------"
     local URL="$1"
-    timeout 5 $browser "$URL"
+    timeout 15 $browser "$URL"
 }
 
 MDN__BASE_URL="https://developer.mozilla.org/en-US"
 MDN_URL="https://developer.mozilla.org/en-US/search?q="
-GOOGLE_LUCKY_URL="http://www.google.com/search?&sourceid=navclient&btnI=I&q="
+GOOGLE_LUCKY_URL="http://www.google.com/search?sourceid=navclient&btnI=I&q="
 
 case $syntax in
     php)
