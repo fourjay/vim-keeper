@@ -1,4 +1,8 @@
-highlight KeyWordHighlight ctermbg=236 ctermfg=123
+if exists("g:loaded_keeper")
+    finish
+endif
+let g:loaded_keeper = 1
+
 
 let s:base_path = expand("<sfile>:p:h")
 function! s:inline_help(...)
@@ -52,17 +56,19 @@ function s:load_help( help_program, search_term )
     endif
     " set up clean buffer
     normal! ggdG
-    setlocal filetype=man
+
+    setlocal filetype=webhelp
     setlocal buftype=nofile
     call append(0, split(external_help, '\v\n'))
     call append(0, "===========================================================")
     call append(0, "Shortcut-keys u:up d:down n?:find next " . a:search_term . " q:quit")
-    call matchadd( "KeyWordHighlight", a:search_term )
-    " 
+    call matchadd( "manReference", a:search_term )
+
     normal! 2G
     execute "silent normal! /" . a:search_term  . "\<CR>"
     let @/ = a:search_term
     nnoremap <buffer> d <C-d>
+    nnoremap <buffer> <Space> <C-d>
     nnoremap <buffer> u <C-u>
     nnoremap <buffer> <silent> q :bdelete<Cr>
 endfunction
@@ -72,9 +78,7 @@ function s:wikipedia(search_term)
     call <SID>load_help(help_program, a:search_term)
 endfunction
 
-
 nnoremap <silent> KK :call <SID>inline_help()<CR>
-"command! -nargs=1 WebMan call <SID>InlineHelp(<f-args>)
 command! -nargs=1 Help call <SID>inline_help(<f-args>)
 command! -nargs=1 Wikipedia call <SID>wikipedia(<f-args>)
 
