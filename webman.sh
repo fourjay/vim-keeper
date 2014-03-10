@@ -2,9 +2,17 @@
 
 print_help() {
     cat <<HELP_BOUNDARY
-USAGE $(basename $0) [-s SYNTAX] keyword
+NAME
+    $(basename $0)
 
-Looks up keyword with an available text browser in an appropriate web source
+SYNOPSIS
+    $(basename $0) [-s SYNTAX] keyword
+
+DESCRIPTION
+
+    Looks up keyword with an available text browser in an appropriate web source
+
+OPTIONS
 
     -s [SYNTAX]
         specify the type (implicly changing the URL and cleanup)
