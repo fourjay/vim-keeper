@@ -58,7 +58,7 @@ function s:load_help( help_program, search_term )
     normal! ggdG
 
     setlocal filetype=webhelp
-    setlocal buftype=nofile
+    setlocal buftype=nofile nobuflisted bufhidden=wipe
     call append(0, split(external_help, '\v\n'))
     call append(0, "===========================================================")
     call append(0, "Shortcut-keys u:up d:down n?:find next " . a:search_term . " q:quit")
