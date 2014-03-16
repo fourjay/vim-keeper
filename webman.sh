@@ -116,15 +116,19 @@ lookup() {
 MDN__BASE_URL="https://developer.mozilla.org/en-US"
 MDN_URL="https://developer.mozilla.org/en-US/search?q="
 GOOGLE_LUCKY_URL="http://www.google.com/search?sourceid=navclient&btnI=I&q="
+DUCKDUCKGO_URL="http://duckduckgo.com/?q="
 
 case $syntax in
     php)
-        lookup "${GOOGLE_LUCKY_URL}site:us.php.net+${search_term}" |
-              sed -n '/Description/,/Contributed Notes/p' | # skip the non-content
+        #lookup "${GOOGLE_LUCKY_URL}site:php.net+${search_term}" |
+        lookup "${DUCKDUCKGO_URL}!phpnet+${search_term}" |
+        sed -e '1,/\(Description\|Closest matches:\)/ d' -e '/Contributed Notes/,$ d' |
               clean_output
+              #sed -n '/Description/,/Contributed Notes/p' | # skip the non-content
+              #clean_output
         ;;
     css)
-        CSS_MAN_URL="http://cssdocs.org/"
+        #CSS_MAN_URL="http://cssdocs.org/"
         lookup "${GOOGLE_LUCKY_URL}site:cssdocs.org+${search_term}" |
             clean_output
         ;;
@@ -139,10 +143,16 @@ case $syntax in
             clean_output
         ;;
     mail|text)
-        DICT="http://m.dictionary.com/definition"
-        lookup "${DICT}/${search_term}"   |
-            sed "1,/${search_term}LINK/d" |
-            sed '/^Share:LINK/,$ d'
+        DICT="http://m.dictionary.com"
+        DICT="m.dictionary.com"
+        #lookup "${DUCKDUCKGO_URL}!ducky+site:m.dictionary.com+${search_term}"   #|
+        #lookup "${DICT}/${search_term}"   |
+        # lookup ${DUCKDUCKGO_URL}site:${DICT}+inurl=definition+${search_term}
+        #lookup "${GOOGLE_LUCKY_URL}site:${DICT}+inurl=definition+${search_term}"
+        #lookup ${DUCKDUCKGO_URL}!dictionary+${search_term}
+        lookup "http://www.thefreedictionary.com/p/${search_term}" #|
+            # sed "1,/${search_term}LINK/d" |
+            # sed '/^Share:LINK/,$ d'
         ;;
     apache)
         lookup "${GOOGLE_LUCKY_URL}site:httpd.apache.org+${search_term}"   |
@@ -151,8 +161,8 @@ case $syntax in
             sed '/^Available Languages:/ d' |
             sed '/\[down\]/ d'
         ;;
-    wiki)
-        lookup "${GOOGLE_LUCKY_URL}site:wikipedia.org+${search_term}"   |
+    wiki*)
+        lookup "${DUCKDUCKGO_URL}!wikipedia+${search_term}"   |
             sed -e '/^From Wikipedia/ d'  \
                 -e '/^Jump to/ d'         \
                 -e '/\[down\]/ d'         \
@@ -174,9 +184,13 @@ case $syntax in
                 -e '1,/^SQL Quiz/ d' |
             clean_output
         ;;
+    awk*)
+        lookup "${DUCKDUCKGO_URL}awk+!ducky+${search_term}"   |
+            clean_output
+        ;;
 
     *)
-        lookup "${GOOGLE_LUCKY_URL}${syntax}+language+reference+${search_term}" |
+        lookup "${DUCKDUCKGO_URL}!${syntax}+${search_term}+!ducky" |
             clean_output
 
 esac
