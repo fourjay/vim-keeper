@@ -25,6 +25,10 @@ function! s:inline_help(...)
     if &filetype ==# ""
         let context = "wiki"
     endif
+    " allow recursive lookup in the help output
+    if &filetype == 'webhelp'
+        let context=w:parent_filetype
+    endif
 
     " Get the plugins external shell script
     let help_program = s:base_path . "/../webman.sh  -s" . context
@@ -41,6 +45,7 @@ function! s:inline_help(...)
 endfunction
 
 function s:load_help( help_program, search_term )
+    let parent_filetype = &filetype
     echo "searching on " . a:search_term . "..."
     " execute and load the output in a buffer
     let external_help = system(  a:help_program . " " . a:search_term )
@@ -58,15 +63,18 @@ function s:load_help( help_program, search_term )
     normal! ggdG
 
     setlocal filetype=webhelp
-    setlocal buftype=nofile nobuflisted bufhidden=wipe
+    let b:parent_filetype = parent_filetype
     call append(0, split(external_help, '\v\n'))
     call append(0, "===========================================================")
     call append(0, "Shortcut-keys u:up d:down n?:find next " . a:search_term . " q:quit")
     call matchadd( "manReference", a:search_term )
+    setlocal buftype=nofile nobuflisted bufhidden=wipe readonly
 
     normal! 2G
     execute "silent normal! /" . a:search_term  . "\<CR>"
     let @/ = a:search_term
+
+    " Act like less
     nnoremap <buffer> d <C-d>
     nnoremap <buffer> <Space> <C-d>
     nnoremap <buffer> u <C-u>
