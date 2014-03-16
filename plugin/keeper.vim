@@ -59,14 +59,20 @@ function s:load_help( help_program, search_term )
     else
         execute large_height . "split " helpbufname
     endif
+    " If we are re-using, then temporarily make writeable warning
+    setlocal noreadonly
     " set up clean buffer
-    normal! ggdG
+    normal! <silent> ggdG
+    if !  exists( "b:parent_filetype" )
+        let b:parent_filetype = parent_filetype
+    endif
 
-    setlocal filetype=webhelp
-    let b:parent_filetype = parent_filetype
     call append(0, split(external_help, '\v\n'))
     call append(0, "===========================================================")
     call append(0, "Shortcut-keys u:up d:down n?:find next " . a:search_term . " q:quit")
+
+    setlocal filetype=webhelp
+    execute "setlocal syntax=" . b:parent_filetype . ".webhelp"
     call matchadd( "manReference", a:search_term )
     setlocal buftype=nofile nobuflisted bufhidden=wipe readonly
 
