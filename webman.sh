@@ -111,8 +111,20 @@ lookup() {
     echo "-----------------------------------"
     local URL="$1"
     timeout 15 $browser "$URL"
+    if [ "$?" -eq "124" ]; then
+        echo "Lookup timed out"
+    fi
 }
 
+# normal sed behavior not well suited to conditional strip from beginning
+strip_begining_to() {
+    local tag="$@"
+    awk 'BEGIN { lines=""; }
+         /'$tag'/ { lines=""; }
+                  { lines = lines "\n"  $0; }
+        END {print lines;}
+    '
+}
 MDN__BASE_URL="https://developer.mozilla.org/en-US"
 MDN_URL="https://developer.mozilla.org/en-US/search?q="
 GOOGLE_LUCKY_URL="http://www.google.com/search?sourceid=navclient&btnI=I&q="
@@ -122,10 +134,8 @@ case $syntax in
     php)
         #lookup "${GOOGLE_LUCKY_URL}site:php.net+${search_term}" |
         lookup "${DUCKDUCKGO_URL}!phpnet+${search_term}" |
-        sed -e '1,/\(Description\|Closest matches:\)/ d' -e '/Contributed Notes/,$ d' |
+        strip_begining_to  '(Description|PHP.Function.List|Closest.matches:|Related.snippet.found.for)' |
               clean_output
-              #sed -n '/Description/,/Contributed Notes/p' | # skip the non-content
-              #clean_output
         ;;
     css)
         #CSS_MAN_URL="http://cssdocs.org/"
@@ -193,5 +203,5 @@ case $syntax in
         lookup "${DUCKDUCKGO_URL}!${syntax}+${search_term}+!ducky" |
             clean_output
 
-esac
+
 
