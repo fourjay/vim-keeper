@@ -27,7 +27,7 @@ function! s:inline_help(...)
     endif
     " allow recursive lookup in the help output
     if &filetype == 'webhelp'
-        let context=w:parent_filetype
+        let context=b:parent_filetype
     endif
 
     " Get the plugins external shell script
@@ -74,6 +74,7 @@ function s:load_help( help_program, search_term )
     execute "silent normal! /" . a:search_term  . "\<CR>"
     let @/ = a:search_term
 
+    noremap <C-]> :call <SID>inline_help()<CR>
     " Act like less
     nnoremap <buffer> d <C-d>
     nnoremap <buffer> <Space> <C-d>
