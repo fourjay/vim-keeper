@@ -134,7 +134,7 @@ case $syntax in
     php)
         #lookup "${GOOGLE_LUCKY_URL}site:php.net+${search_term}" |
         lookup "${DUCKDUCKGO_URL}!phpnet+${search_term}" |
-        strip_begining_to  '(Description|PHP.Function.List|Closest.matches:|Related.snippet.found.for)' |
+        strip_begining_to  '(Description|PHP.Function.List|Closest.matches:|Related.snippet.found.for|Change|language:)' |
               clean_output
         ;;
     css)
