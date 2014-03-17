@@ -67,6 +67,19 @@ function s:load_help( help_program, search_term )
         let b:parent_filetype = parent_filetype
     endif
 
+    " Track previous searches for back
+    if ! exists( "b:search_stack" )
+        let b:search_stack = [ a:search_term ]
+    elseif exists ("b:search_stack_pointer")
+        " don't add search term to stack
+        if b:search_stack[ b:search_stack_pointer ] !=# a:search_term
+            echo  b:search_stack
+            echo "a:search_term is " . a:search_term
+            let  b:search_stack  = b:search_stack + [ a:search_term ] 
+            echo b:search_stack
+        endif
+    endif
+
     call append(0, split(external_help, '\v\n'))
     call append(0, "===========================================================")
     call append(0, "Shortcut-keys u:up d:down n?:find next " . a:search_term . " q:quit")
@@ -86,6 +99,31 @@ function s:load_help( help_program, search_term )
     nnoremap <buffer> <Space> <C-d>
     nnoremap <buffer> u <C-u>
     nnoremap <buffer> <silent> q :bdelete<Cr>
+    nnoremap <buffer> <silent> <C-t> call <SID>search_previous()<CR>
+    nnoremap <buffer> <silent> b :call <SID>search_previous()<CR>
+endfunc<CR>tion
+
+function s:search_previous()
+    let stack_size = 0
+    if ! exists("b:search_stack")
+        echo "no previous searches"
+    else
+        let stack_size = len(b:search_stack)
+    endif
+    if ! exists("b:search_stack_pointer")
+        let b:search_stack_pointer = stack_size - 1
+    endif
+    if b:search_stack_pointer > stack_size
+        echo "at search stack end"
+    elseif b:search_stack_pointer < 0
+        echo "At beginning of search stack"
+    else
+        "echo "b:search_stack_pointer " . b:search_stack_pointer
+        let b:search_stack_pointer = b:search_stack_pointer - 1
+        echo b:search_stack
+        let stacked_searchword = b:search_stack[b:search_stack_pointer]
+        call <SID>inline_help( stacked_searchword )
+    endif
 endfunction
 
 function s:wikipedia(search_term)
