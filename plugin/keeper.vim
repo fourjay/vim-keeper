@@ -88,6 +88,7 @@ function s:load_help( help_program, search_term )
     execute "setlocal syntax=" . b:parent_filetype . ".webhelp"
     call matchadd( "manReference", a:search_term )
     setlocal buftype=nofile nobuflisted bufhidden=wipe readonly
+    setlocal noswapfile nowritebackup viminfo= nobackup noshelltemp history=0
 
     normal! 2G
     execute "silent normal! /" . a:search_term  . "\<CR>"
