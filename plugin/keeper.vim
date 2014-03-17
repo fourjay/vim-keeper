@@ -73,10 +73,7 @@ function s:load_help( help_program, search_term )
     elseif exists ("b:search_stack_pointer")
         " don't add search term to stack
         if b:search_stack[ b:search_stack_pointer ] !=# a:search_term
-            echo  b:search_stack
-            echo "a:search_term is " . a:search_term
             let  b:search_stack  = b:search_stack + [ a:search_term ] 
-            echo b:search_stack
         endif
     endif
 
@@ -90,21 +87,31 @@ function s:load_help( help_program, search_term )
     setlocal buftype=nofile nobuflisted bufhidden=wipe readonly
     setlocal noswapfile nowritebackup viminfo= nobackup noshelltemp history=0
 
-    normal! 2G
+    normal! 3G
     execute "silent normal! /" . a:search_term  . "\<CR>"
     let @/ = a:search_term
 
+    " Emulate tagstack
     noremap <C-]> :call <SID>inline_help()<CR>
+    nnoremap <buffer> <silent> <C-t> :call <SID>search_previous()<CR>
+    " menmonic history navigation
+    nnoremap <buffer> <silent> <C-k>  :call <SID>search_previous()<CR>
+    nnoremap <buffer> <silent> <C-j>  :call <SID>search_next()<CR>
     " Act like less
     nnoremap <buffer> d <C-d>
     nnoremap <buffer> <Space> <C-d>
     nnoremap <buffer> u <C-u>
     nnoremap <buffer> <silent> q :bdelete<Cr>
-    nnoremap <buffer> <silent> <C-t> call <SID>search_previous()<CR>
-    nnoremap <buffer> <silent> b :call <SID>search_previous()<CR>
 endfunc<CR>tion
 
 function s:search_previous()
+    call <SID>search_seek(-1)
+endfunction
+function s:search_next()
+    call <SID>search_seek(1)
+endfunction
+
+function s:search_seek(offset)
     let stack_size = 0
     if ! exists("b:search_stack")
         echo "no previous searches"
@@ -117,11 +124,10 @@ function s:search_previous()
     if b:search_stack_pointer > stack_size
         echo "at search stack end"
     elseif b:search_stack_pointer < 0
+        let b:search_stack_pointer = 0
         echo "At beginning of search stack"
     else
-        "echo "b:search_stack_pointer " . b:search_stack_pointer
-        let b:search_stack_pointer = b:search_stack_pointer - 1
-        echo b:search_stack
+        let b:search_stack_pointer = b:search_stack_pointer + a:offset
         let stacked_searchword = b:search_stack[b:search_stack_pointer]
         call <SID>inline_help( stacked_searchword )
     endif
