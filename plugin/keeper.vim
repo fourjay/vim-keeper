@@ -3,7 +3,6 @@ if exists("g:loaded_keeper")
 endif
 let g:loaded_keeper = 1
 
-
 let s:base_path = expand("<sfile>:p:h")
 function! s:inline_help(...)
     " Account for the special case non-external keywordprg
@@ -31,7 +30,10 @@ function! s:inline_help(...)
     endif
 
     " Get the plugins external shell script
-    let help_program = s:base_path . "/../webman.sh  -s" . context
+    " let help_program = s:base_path . "/../webman.sh  -s" . context
+    " let help_program = <SID>get_browser_syscall() . " \"" . <SID>geturl( context ) . "\""
+    let help_program = <SID>get_webman_syscall( context, keyword )
+
     " Allow user settings for keywordprg to override webman
     if &keywordprg !~ "^man" && executable( &keywordprg )
         let help_program = &keywordprg
@@ -41,14 +43,15 @@ function! s:inline_help(...)
             let help_program = &keywordprg
         endif
     endif
-    call <SID>load_help(help_program, keyword)
+    call <SID>load_help(help_program, keyword, context)
 endfunction
 
-function s:load_help( help_program, search_term )
+function s:load_help( help_program, search_term, context )
     let parent_filetype = &filetype
     echo "searching on " . a:search_term . "..."
     " execute and load the output in a buffer
-    let external_help = system(  a:help_program . " " . a:search_term )
+    "let external_help = system(  a:help_program . " " . a:search_term )
+    let external_help = system(  a:help_program )
     " open split with reasonable height
     let helpbufname = "__HELP__"
     let large_height = &lines * 2 / 3
@@ -62,7 +65,7 @@ function s:load_help( help_program, search_term )
     " If we are re-using, then temporarily make writeable warning
     setlocal noreadonly
     " set up clean buffer
-    normal! <silent> ggdG
+    normal! ggdG
     if !  exists( "b:parent_filetype" )
         let b:parent_filetype = parent_filetype
     endif
@@ -77,8 +80,12 @@ function s:load_help( help_program, search_term )
         endif
     endif
 
+    call append(0, "Search results from " . a:help_program )
+    call append(0, "------------------------------------------")
     call append(0, split(external_help, '\v\n'))
-    call append(0, "===========================================================")
+    call <SID>cleanup_by_context(a:context)
+
+    call append(0, "=====================================================================")
     call append(0, "Shortcut-keys u:up d:down n?:find next " . a:search_term . " q:quit")
 
     setlocal filetype=webhelp
@@ -133,9 +140,58 @@ function s:search_seek(offset)
     endif
 endfunction
 
-function s:wikipedia(search_term)
+function! s:wikipedia(search_term)
     let help_program = s:base_path . "/../webman.sh  -swiki " . a:search_term
     call <SID>load_help(help_program, a:search_term)
+endfunction
+
+function! s:get_browser_syscall()
+    let browser_list = {
+                \ 'lynx'   : '-dump',
+                \ 'links'  : '-dump',
+                \ 'elinks' : '--no-references -dump --no-numbering',
+                \ 'w3m'    : '-dump',
+                \}
+
+    let ordered_browsers = [ 'elinks', 'w3m', 'links', 'lynx' ]
+
+    for browser in ordered_browsers
+        if executable( browser )
+            return  browser . "  " . browser_list[browser]
+        endif
+    endfor
+endfunction
+
+let s:ddg = "http://duckduckgo.com/?q="
+let s:URL_mappings = {
+            \"php": s:ddg . "!phpnet",
+            \"css": s:ddg . "!mdn+css",
+            \"perl": s:ddg . "!perldoc",
+            \"javascript": s:ddg . "!mdn+javascript",
+            \}
+
+function! s:geturl(context, search_term)
+    if ! has_key( s:URL_mappings, &filetype )
+        let url = s:ddg . "!" . a:context
+    else
+        let url = s:URL_mappings[ a:context ]
+    endif
+    let url .= "+" . a:search_term
+    return url
+endfunction
+
+function! s:get_webman_syscall( context, search_term )
+    let browser = <SID>get_browser_syscall()
+    let url = <SID>geturl(a:context, a:search_term)
+    let prg =  browser .  " '" . url . "'"
+    return prg
+endfunction
+
+function! s:cleanup_by_context(context)
+    if a:context ==# 'php'
+        silent! 1,/Report a Bug/ d
+        silent! 1,/Focus search box/ d
+    endif
 endfunction
 
 nnoremap <silent> KK :call <SID>inline_help()<CR>
