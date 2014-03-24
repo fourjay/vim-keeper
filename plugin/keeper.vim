@@ -17,16 +17,16 @@ function! s:inline_help(...)
     if  a:0
         let keyword = a:1
     else
-        let keyword = expand('<cword>')
+        let keyword = <SID>get_searchword()  " expand('<cword>')
     endif
 
-    let context = &filetype
-    if &filetype ==# ""
-        let context = "wiki"
-    endif
-    " allow recursive lookup in the help output
     if &filetype == 'webhelp'
+    " allow recursive lookup in the help output
         let context=b:parent_filetype
+    elseif &filetype ==# ""
+        let context = "wiki"
+    else
+        let context = <SID>get_cword_context()
     endif
 
     " Get the plugins external shell script
@@ -46,8 +46,40 @@ function! s:inline_help(...)
     call <SID>load_help(help_program, keyword, context)
 endfunction
 
+function! s:get_searchword()
+    let cline = getline(".")
+    "echom "cline " . cline
+    "let url = matchstr( cline, "\v\s\zs[^ ]+(com|net|org)[:]*[/]+[^ ]+" )
+    "echom "url is " . url
+    " if url
+    "     echom "found url " . url
+    " endif
+    " if cline =~? "/\v\w+\.(com|org|net)[:]*[/]+\w+/"
+    "     echom "found URL"
+    " endif
+    let selected = ""
+    if mode() == 'v'
+        let selected = getline("'<")[getpos("'<")[2]-1:getpos("'>")[2]]
+        echom "selected " . selected
+    endif
+    return expand("\<cword>")
+endfunction
+
+function! s:get_cword_context()
+    let keyword_syngrp = synIDattr(synID(line('.'), col('.'), 0), 'name')
+    if keyword_syngrp =~# "SQL"
+        return "sql"
+    elseif keyword_syngrp =~? "javascript"
+        return "javascript"
+    endif
+    if &filetype != ""
+        return &filetype
+    endif
+
+endfunction
+
 function s:load_help( help_program, search_term, context )
-    let parent_filetype = &filetype
+    let parent_filetype = a:context
     echo "searching on " . a:search_term . "..."
     " execute and load the output in a buffer
     "let external_help = system(  a:help_program . " " . a:search_term )
@@ -86,7 +118,8 @@ function s:load_help( help_program, search_term, context )
     call <SID>cleanup_by_context(a:context)
 
     call append(0, "=====================================================================")
-    call append(0, "Shortcut-keys u:up d:down n?:find next " . a:search_term . " q:quit")
+    call append(0, "              Ctrl-]:new search Ctrl-T:back")
+    call append(0, "SHORTCUT-KEYS u:up d:down n?:find next " . a:search_term . " q:quit")
 
     setlocal filetype=webhelp
     execute "setlocal syntax=" . b:parent_filetype . ".webhelp"
@@ -163,11 +196,13 @@ function! s:get_browser_syscall()
 endfunction
 
 let s:ddg = "http://duckduckgo.com/?q="
+let s:glucky ="http://www.google.com/search?sourceid=navclient&btnI=I&q="
 let s:URL_mappings = {
-            \"php": s:ddg . "!phpnet",
-            \"css": s:ddg . "!mdn+css",
-            \"perl": s:ddg . "!perldoc",
-            \"javascript": s:ddg . "!mdn+javascript",
+            \"php"        :  s:ddg . "!phpnet",
+            \"css"        :  s:glucky . "site:cssdocs.org",
+            \"perl"       :  s:ddg . "!perldoc",
+            \"javascript" :  s:ddg . "!mdn+javascript",
+            \"html"       :  s:ddg . "!mdn+html",
             \}
 
 function! s:geturl(context, search_term)
@@ -195,6 +230,7 @@ function! s:cleanup_by_context(context)
 endfunction
 
 nnoremap <silent> KK :call <SID>inline_help()<CR>
+xnoremap <silent> KK :call <SID>inline_help()<CR>
 command! -nargs=1 Help call <SID>inline_help(<f-args>)
 command! -nargs=1 Wikipedia call <SID>wikipedia(<f-args>)
 
