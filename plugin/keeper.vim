@@ -20,18 +20,24 @@ function! s:inline_help(...)
         let keyword = <SID>get_searchword()  " expand('<cword>')
     endif
 
+    let context = 'wiki'
     if &filetype == 'webhelp'
-    " allow recursive lookup in the help output
+        " allow recursive lookup in the help output
         let context=b:parent_filetype
+    " If we don't have a better option
     elseif &filetype ==# ""
         let context = "wiki"
+    " Allow corcing context
+    elseif a:0 > 1
+        let context = a:2
     else
         let context = <SID>get_cword_context()
     endif
 
-    " Get the plugins external shell script
-    " let help_program = s:base_path . "/../webman.sh  -s" . context
-    " let help_program = <SID>get_browser_syscall() . " \"" . <SID>geturl( context ) . "\""
+    let url = <SID>extract_url(getline("."))
+    if url != ""
+        let context = "url"
+    endif
     let help_program = <SID>get_webman_syscall( context, keyword )
 
     " Allow user settings for keywordprg to override webman
@@ -43,26 +49,42 @@ function! s:inline_help(...)
             let help_program = &keywordprg
         endif
     endif
+
     call <SID>load_help(help_program, keyword, context)
 endfunction
 
 function! s:get_searchword()
     let cline = getline(".")
-    "echom "cline " . cline
-    "let url = matchstr( cline, "\v\s\zs[^ ]+(com|net|org)[:]*[/]+[^ ]+" )
-    "echom "url is " . url
-    " if url
-    "     echom "found url " . url
-    " endif
-    " if cline =~? "/\v\w+\.(com|org|net)[:]*[/]+\w+/"
-    "     echom "found URL"
-    " endif
+    let url = <SID>extract_url(cline)
+    if url != ""
+        return url
+    endif
     let selected = ""
     if mode() == 'v'
+        echom "visual selection"
         let selected = getline("'<")[getpos("'<")[2]-1:getpos("'>")[2]]
+        let selected = substitute( selected, " ", "+", "g")
         echom "selected " . selected
+        return selected
     endif
     return expand("\<cword>")
+endfunction
+
+function! s:extract_url(cline)
+    " yes, this is incomplete, but in practice...
+    let TLDs = [ 'com', 'net', 'org' ]
+    " matchstr (at least in my environment) doesn't uork with match alternate
+    for tld in TLDs
+        let link_pattern = "[^ ][^ ]*[.]" . tld . "[:\/][/]*[^ ][^ ]*" 
+        " echom "link_pattern is " . link_pattern
+        let url = matchstr( a:cline, link_pattern)
+        " echom "with tld " . tld . "url is " . url
+        if url != ""
+            echom "found URL " . url
+            return url
+        endif
+    endfor
+    return ""
 endfunction
 
 function! s:get_cword_context()
@@ -174,8 +196,8 @@ function s:search_seek(offset)
 endfunction
 
 function! s:wikipedia(search_term)
-    let help_program = s:base_path . "/../webman.sh  -swiki " . a:search_term
-    call <SID>load_help(help_program, a:search_term)
+    " let help_program = s:base_path . "/../webman.sh  -swiki " . a:search_term
+    call <SID>inline_help( a:search_term), "wiki")
 endfunction
 
 function! s:get_browser_syscall()
@@ -203,9 +225,15 @@ let s:URL_mappings = {
             \"perl"       :  s:ddg . "!perldoc",
             \"javascript" :  s:ddg . "!mdn+javascript",
             \"html"       :  s:ddg . "!mdn+html",
+            \"wiki"       :  s:ddg . "!wikipedia",
             \}
 
 function! s:geturl(context, search_term)
+    echom "in geturl context " . a:context . " search_term " . a:search_term
+    " convention for straight URL
+    if a:context ==# "url"
+        return a:search_term
+    endif
     if ! has_key( s:URL_mappings, &filetype )
         let url = s:ddg . "!" . a:context
     else
@@ -219,6 +247,7 @@ function! s:get_webman_syscall( context, search_term )
     let browser = <SID>get_browser_syscall()
     let url = <SID>geturl(a:context, a:search_term)
     let prg =  browser .  " '" . url . "'"
+    echom "returned is " . prg
     return prg
 endfunction
 
