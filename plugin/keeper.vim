@@ -60,14 +60,20 @@ function! s:get_searchword()
         return url
     endif
     let selected = ""
-    if mode() == 'v'
-        echom "visual selection"
-        let selected = getline("'<")[getpos("'<")[2]-1:getpos("'>")[2]]
+    if visualmode() == 'v'
+        let selected = <SID>get_visual()
         let selected = substitute( selected, " ", "+", "g")
-        echom "selected " . selected
         return selected
     endif
     return expand("\<cword>")
+endfunction
+
+function! s:get_visual()
+    let saved_s_register = @s
+    normal! gv"sy
+    let selected = @s
+    let @s = saved_s_register
+    return selected
 endfunction
 
 function! s:extract_url(cline)
@@ -80,7 +86,6 @@ function! s:extract_url(cline)
         let url = matchstr( a:cline, link_pattern)
         " echom "with tld " . tld . "url is " . url
         if url != ""
-            echom "found URL " . url
             return url
         endif
     endfor
@@ -151,7 +156,11 @@ function s:load_help( help_program, search_term, context )
 
     normal! 3G
     execute "silent normal! /" . a:search_term  . "\<CR>"
-    let @/ = a:search_term
+    if a:context != "url"
+        let @/ = a:search_term
+    else
+        normal! gg
+    endif
 
     " Emulate tagstack
     noremap <C-]> :call <SID>inline_help()<CR>
@@ -229,7 +238,6 @@ let s:URL_mappings = {
             \}
 
 function! s:geturl(context, search_term)
-    echom "in geturl context " . a:context . " search_term " . a:search_term
     " convention for straight URL
     if a:context ==# "url"
         return a:search_term
@@ -247,7 +255,6 @@ function! s:get_webman_syscall( context, search_term )
     let browser = <SID>get_browser_syscall()
     let url = <SID>geturl(a:context, a:search_term)
     let prg =  browser .  " '" . url . "'"
-    echom "returned is " . prg
     return prg
 endfunction
 
