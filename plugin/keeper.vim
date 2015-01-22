@@ -173,7 +173,8 @@ function s:load_help( help_program, search_term, context )
     nnoremap <buffer> <Space> <C-d>
     nnoremap <buffer> u <C-u>
     nnoremap <buffer> <silent> q :bdelete<Cr>
-endfunc<CR>tion
+    nnoremap <buffer> n nzz
+endfunction
 
 function s:search_previous()
     call <SID>search_seek(-1)
@@ -229,12 +230,12 @@ endfunction
 let s:ddg = "http://duckduckgo.com/?q="
 let s:glucky ="http://www.google.com/search?sourceid=navclient&btnI=I&q="
 let s:URL_mappings = {
-            \"php"        :  s:ddg . "!phpnet",
+            \"php"        :  s:ddg    . "!phpnet",
             \"css"        :  s:glucky . "site:cssdocs.org",
-            \"perl"       :  s:ddg . "!perldoc",
-            \"javascript" :  s:ddg . "!mdn+javascript",
-            \"html"       :  s:ddg . "!mdn+html",
-            \"wiki"       :  s:ddg . "!wikipedia",
+            \"perl"       :  s:glucky . "site:perldoc.perl.org",
+            \"javascript" :  s:ddg    . "!mdn+javascript",
+            \"html"       :  s:ddg    . "!mdn+html",
+            \"wiki"       :  s:ddg    . "!wikipedia",
             \}
 
 function! s:geturl(context, search_term)
