@@ -153,9 +153,10 @@ function s:load_help( help_program, search_term, context )
     call matchadd( "manReference", a:search_term )
     setlocal buftype=nofile nobuflisted bufhidden=wipe readonly
     setlocal noswapfile nowritebackup viminfo= nobackup noshelltemp history=0
+    setlocal scrolloff=2
 
     normal! 3G
-    execute "silent normal! /" . a:search_term  . "\<CR>"
+    execute "silent normal! /" . a:search_term  . "\<CR>zt"
     if a:context != "url"
         let @/ = a:search_term
     else
@@ -173,7 +174,7 @@ function s:load_help( help_program, search_term, context )
     nnoremap <buffer> <Space> <C-d>
     nnoremap <buffer> u <C-u>
     nnoremap <buffer> <silent> q :bdelete<Cr>
-    nnoremap <buffer> n nzz
+    nnoremap <buffer> n nzt
 endfunction
 
 function s:search_previous()
@@ -218,7 +219,7 @@ function! s:get_browser_syscall()
                 \ 'w3m'    : '-dump',
                 \}
 
-    let ordered_browsers = [ 'elinks', 'w3m', 'links', 'lynx' ]
+    let ordered_browsers = [ 'w3m', 'links', 'lynx', 'elinks' ]
 
     for browser in ordered_browsers
         if executable( browser )
