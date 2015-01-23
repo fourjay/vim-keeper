@@ -107,7 +107,7 @@ endfunction
 
 function s:load_help( help_program, search_term, context )
     let parent_filetype = a:context
-    echo "searching on " . a:search_term . "..."
+    " echom "searching on " . a:search_term . "..."
     " execute and load the output in a buffer
     "let external_help = system(  a:help_program . " " . a:search_term )
     let external_help = system(  a:help_program )
@@ -119,7 +119,7 @@ function s:load_help( help_program, search_term, context )
     if winnr > 0
         execute winnr . "wincmd w"
     else
-        execute large_height . "split " helpbufname
+        silent execute large_height . "split " helpbufname
     endif
     " If we are re-using, then temporarily make writeable warning
     setlocal noreadonly
@@ -138,6 +138,8 @@ function s:load_help( help_program, search_term, context )
             let  b:search_stack  = b:search_stack + [ a:search_term ] 
         endif
     endif
+
+    echom "results of: " . a:help_program . "..."
 
     call append(0, "Search results from " . a:help_program )
     call append(0, "------------------------------------------")
@@ -164,7 +166,7 @@ function s:load_help( help_program, search_term, context )
     endif
 
     " Emulate tagstack
-    noremap <C-]> :call <SID>inline_help()<CR>
+    nnoremap <buffer> <C-]> :call <SID>inline_help()<CR>
     nnoremap <buffer> <silent> <C-t> :call <SID>search_previous()<CR>
     " menmonic history navigation
     nnoremap <buffer> <silent> <C-k>  :call <SID>search_previous()<CR>
@@ -244,7 +246,7 @@ function! s:geturl(context, search_term)
     if a:context ==# "url"
         return a:search_term
     endif
-    if ! has_key( s:URL_mappings, &filetype )
+    if ! has_key( s:URL_mappings, a:context )
         let url = s:ddg . "!" . a:context
     else
         let url = s:URL_mappings[ a:context ]
