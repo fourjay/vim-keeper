@@ -54,3 +54,6 @@ KK works as the web based version of K.
     Freeform lookup. Takes an argument, which is then searched for.
     The intent is something closer to man or help, rather then a
     keywordprg
+
+:WikiPedia                                      *:WikiPedia*
+    Like :Help, but override the default search site and use wikipedia
