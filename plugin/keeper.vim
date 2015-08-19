@@ -110,7 +110,7 @@ function s:load_help( help_program, search_term, context )
     " echom "searching on " . a:search_term . "..."
     " execute and load the output in a buffer
     "let external_help = system(  a:help_program . " " . a:search_term )
-    let external_help = system(  a:help_program )
+    silent let external_help = system(  a:help_program )
     " open split with reasonable height
     let helpbufname = "__HELP__"
     let large_height = &lines * 2 / 3
@@ -209,8 +209,28 @@ function s:search_seek(offset)
 endfunction
 
 function! s:wikipedia(search_term)
-    " let help_program = s:base_path . "/../webman.sh  -swiki " . a:search_term
     call <SID>inline_help( a:search_term), "wiki")
+endfunction
+
+let s:browser = ""
+function s:get_browser()
+    let ordered_browsers = [ 
+               \  'w3m',
+               \  'links',
+               \  'lynx',
+               \  'elinks',
+               \  'curl',
+               \  'wget',
+               \ ]
+    if len(s:browser) == 0
+        for browser in ordered_browsers
+            if executable( browser )
+                let s:browser = browser
+                break
+            endif
+        endfor
+    endif
+    return s:browser
 endfunction
 
 function! s:get_browser_syscall()
@@ -219,15 +239,13 @@ function! s:get_browser_syscall()
                 \ 'links'  : '-dump',
                 \ 'elinks' : '--no-references -dump --no-numbering',
                 \ 'w3m'    : '-dump',
+                \ 'curl'   : '-q -A "Lynx" -L -s',
+                \ 'wget'   : '-qO- -U "Lynx"',
                 \}
 
-    let ordered_browsers = [ 'w3m', 'links', 'lynx', 'elinks' ]
 
-    for browser in ordered_browsers
-        if executable( browser )
-            return  browser . "  " . browser_list[browser]
-        endif
-    endfor
+    let browser = <SID>get_browser()
+    return  browser . "  " . browser_list[browser]
 endfunction
 
 let s:ddg = "http://duckduckgo.com/?q="
@@ -239,6 +257,8 @@ let s:URL_mappings = {
             \"javascript" :  s:ddg    . "!mdn+javascript",
             \"html"       :  s:ddg    . "!mdn+html",
             \"wiki"       :  s:ddg    . "!wikipedia",
+            \"text"       :  s:ddg    . "!ahd",
+            \"mail"       :  s:ddg    . "!ahd",
             \}
 
 function! s:geturl(context, search_term)
@@ -256,9 +276,20 @@ function! s:geturl(context, search_term)
 endfunction
 
 function! s:get_webman_syscall( context, search_term )
-    let browser = <SID>get_browser_syscall()
+    let browser = <SID>get_browser()
+    let browser_call = <SID>get_browser_syscall()
     let url = <SID>geturl(a:context, a:search_term)
-    let prg =  browser .  " '" . url . "'"
+    let prg =  browser_call .  " '" . url . "'"
+    if browser == "curl" || browser == "wget"
+        let prg =  browser_call .  " '" . url 
+                    \ . "' | sed "
+                    \ .     " -e 's|\\(<[^>]*>\\)|\\n&\\n|g' "
+                    \ . " | sed "
+                    \ .     " -e '/<script/,/<\\/script>/ s/.*//' "
+                    \ .     " -e '1,/<\\/head>/ d' "
+                    \ .     " -e '/^<[^>]*>/ d' "
+                    \ .     " -e '/^[ ]*$/ d' "
+    endif
     return prg
 endfunction
 
@@ -272,5 +303,6 @@ endfunction
 nnoremap <silent> KK :call <SID>inline_help()<CR>
 xnoremap <silent> KK :call <SID>inline_help()<CR>
 command! -nargs=1 Help call <SID>inline_help(<f-args>)
+command! Lookup call <SID>inline_help()
 command! -nargs=1 Wikipedia call <SID>wikipedia(<f-args>)
 
