@@ -1,6 +1,16 @@
-*keeper.txt* Integrated documentation viewer
+*vim-keeper* Integrated web documentation viewer
 
-INTRODUCTION                                *keeper*
+Browse web documentation in vim
+
+================================================================================
+CONTENTS                            *KeeperContents*
+
+    1. Introduction.................|KeeperIntro|
+    2. Usage........................|KeeperUsage|
+    3. Mappings.....................|KeeperMappings|
+
+================================================================================
+1. INTRODUCTION                                *KeeperIntro*
 
 Keywordprg is useful, but hasn't aged well. It works well for C
 and for shell scripts, but rarely used in any other context.
@@ -10,4 +20,37 @@ documentation is not easily copied and manipulated with vim tools.
 And finally it's awkward in one of the most common scenarios, writing
 new code, exploring keywords that are not already typed on the page.
 
+Standard approach (and arguably in the UNIX spirit) is to use an
+external tool, which is what most of us do, albeit a non-integrated
+tool. Of course I mean we pull up a web browser. This is a stab at a
+smarter and more integrated approach.
 
+It's likely not obvious but keeper is my synthesis of keywordprg
+
+This program looks for a text based browser, falling back to curl or
+wget if available. w3m, lynx or (e)links are clearly better.
+
+================================================================================
+2. USAGE                                   *KeeperUsage*
+
+In a mapped filetype, various commands will stuff hopefully appropriate
+and syntax highlighted help text in a separate buffer. This buffer has
+several helpful shortcuts, in particular the searched for word is
+highlighted and readily in the search buffer, so "n" will hop through
+the fetched documentation.
+
+================================================================================
+3. MAPPINGS                               *KeeperMappings*
+
+3.1 Help Key                              *KK* *KeeperKeyWordPrg*
+
+KK works as the web based version of K.
+
+:Lookup                                   *:Lookup*
+    Lookup up current word using, with a guess to appropriate source,
+    otherwise defaults to WikiPedia
+
+:Help                                      *:Help*
+    Freeform lookup. Takes an argument, which is then searched for.
+    The intent is something closer to man or help, rather then a
+    keywordprg
