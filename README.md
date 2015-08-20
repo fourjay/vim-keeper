@@ -29,16 +29,20 @@ provide useful help "automagically". This comes pretty close.
 
 ## Usage
 
-keeper provides a mapping and commandm, neither of which should conflict with
-most setups.
+keeper provides a mapping and commands, neither of which should conflict with
+most setups. KK is mapped as a (more or less) replacement for the stock K
+without stepping on existing K mappings
 
-*MAPPING*
+*MAPPINGS*
 `KK` does context sensitive search for documentation. This is obviously
 modeled on vim's existing keyword map.
 
-*COMMAND*
-`:WebMan` does a context sensitive lookup on an arbitrary keyword.
+*COMMANDS*
+`:Lookup` does a context sensitive lookup on the current word
+`:Help` does a context sensitive lookup on an arbitrary keyword.
+`:Wikipedia STRING` searches wikipedia for STRING
+`:Thesaurus STRING` searches online thesaurus for STRING
 
 ## Caveats
-keeper expects a unix shell, and works best with some sort of text
-browser (it understands lynx, w3m, elink and links)
+Requires a text based browser command somewhere in your path.
+Supports w3m, lynx, elinks, links and will fall back to curl or wget
