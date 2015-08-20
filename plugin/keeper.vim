@@ -21,7 +21,9 @@ function! s:inline_help(...)
     endif
 
     let context = 'wiki'
-    if &filetype == 'webhelp'
+    if a:0 == 2
+        let context = a:2
+    elseif &filetype == 'webhelp'
         " allow recursive lookup in the help output
         let context=b:parent_filetype
     " If we don't have a better option
@@ -209,7 +211,11 @@ function s:search_seek(offset)
 endfunction
 
 function! s:wikipedia(search_term)
-    call <SID>inline_help( a:search_term), "wiki")
+    call <SID>inline_help( a:search_term, "wiki")
+endfunction
+
+function! s:thesaurus(search_term)
+    call <SID>inline_help( a:search_term, "thesaurus")
 endfunction
 
 let s:browser = ""
@@ -256,10 +262,11 @@ let s:URL_mappings = {
             \"perl"       :  s:glucky . "site:perldoc.perl.org",
             \"javascript" :  s:ddg    . "!mdn+javascript",
             \"html"       :  s:ddg    . "!mdn+html",
-            \"wiki"       :  s:ddg    . "!wikipedia",
             \"text"       :  s:ddg    . "!ahd",
             \"mail"       :  s:ddg    . "!ahd",
             \"make"       :  s:glucky . "site:www.gnu.org",
+            \"wiki"       :  s:ddg    . "!wikipedia",
+            \"thesaurus"  :  "http://www.thesaurus.com/browse/",
             \}
 
 function! s:geturl(context, search_term)
@@ -306,4 +313,5 @@ xnoremap <silent> KK :call <SID>inline_help()<CR>
 command! -nargs=1 Help call <SID>inline_help(<f-args>)
 command! Lookup call <SID>inline_help()
 command! -nargs=1 Wikipedia call <SID>wikipedia(<f-args>)
+command! -nargs=1 Thesaurus call <SID>thesaurus(<f-args>)
 
