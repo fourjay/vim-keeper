@@ -259,6 +259,7 @@ let s:URL_mappings = {
             \"wiki"       :  s:ddg    . "!wikipedia",
             \"text"       :  s:ddg    . "!ahd",
             \"mail"       :  s:ddg    . "!ahd",
+            \"make"       :  s:glucky . "site:www.gnu.org",
             \}
 
 function! s:geturl(context, search_term)
