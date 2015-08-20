@@ -235,7 +235,7 @@ endfunction
 
 function! s:get_browser_syscall()
     let browser_list = {
-                \ 'lynx'   : '-dump',
+                \ 'lynx'   : '-dump -nonumbers ',
                 \ 'links'  : '-dump',
                 \ 'elinks' : '--no-references -dump --no-numbering',
                 \ 'w3m'    : '-dump',
