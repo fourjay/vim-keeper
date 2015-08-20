@@ -38,11 +38,20 @@ without stepping on existing K mappings
 modeled on vim's existing keyword map.
 
 *COMMANDS*
+
 `:Lookup` does a context sensitive lookup on the current word
+
 `:Help` does a context sensitive lookup on an arbitrary keyword.
+
 `:Wikipedia STRING` searches wikipedia for STRING
+
 `:Thesaurus STRING` searches online thesaurus for STRING
 
 ## Caveats
 Requires a text based browser command somewhere in your path.
 Supports w3m, lynx, elinks, links and will fall back to curl or wget
+
+**OTHER**
+
+    https://github.com/yuratomo/w3m.vim
+    A fairly feature complete wrapper around w3m
