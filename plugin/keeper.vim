@@ -305,17 +305,19 @@ function! s:cleanup_by_context(context)
     if a:context ==# 'php'
         silent! 1,/Report a Bug/ d
         silent! 1,/Focus search box/ d
+    elseif a:context ==# 'thesaurus'
+        silent! 1,/^show \[all/ d
+        silent % s/ star$//
     endif
 endfunction
 
 function s:suggest_words(A,C,P)
-    " return expand("<cword>")
-    return [ expand("<cword>") ] + split( getline(".") ) 
+    return [ expand("<cword>") ] + split( getline(".") )
 endfunction
 
 nnoremap <silent> KK :call <SID>inline_help()<CR>
 xnoremap <silent> KK :call <SID>inline_help()<CR>
-command! -nargs=1 Help call <SID>inline_help(<f-args>)
+command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_help(<f-args>)
 command! Lookup call <SID>inline_help()
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
