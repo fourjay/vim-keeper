@@ -146,6 +146,10 @@ function s:load_help( help_program, search_term, context )
     call append(0, "Search results from " . a:help_program )
     call append(0, "------------------------------------------")
     call append(0, split(external_help, '\v\n'))
+    let browser = <SID>get_browser()
+    if browser == "curl" || browser == "wget"
+        call <SID>strip_raw_html()
+    endif
     call <SID>cleanup_by_context(a:context)
 
     call append(0, "=====================================================================")
@@ -288,16 +292,6 @@ function! s:get_webman_syscall( context, search_term )
     let browser_call = <SID>get_browser_syscall()
     let url = <SID>geturl(a:context, a:search_term)
     let prg =  browser_call .  " '" . url . "'"
-    if browser == "curl" || browser == "wget"
-        let prg =  browser_call .  " '" . url 
-                    \ . "' | sed "
-                    \ .     " -e 's|\\(<[^>]*>\\)|\\n&\\n|g' "
-                    \ . " | sed "
-                    \ .     " -e '/<script/,/<\\/script>/ s/.*//' "
-                    \ .     " -e '1,/<\\/head>/ d' "
-                    \ .     " -e '/^<[^>]*>/ d' "
-                    \ .     " -e '/^[ ]*$/ d' "
-    endif
     return prg
 endfunction
 
@@ -307,8 +301,34 @@ function! s:cleanup_by_context(context)
         silent! 1,/Focus search box/ d
     elseif a:context ==# 'thesaurus'
         silent! 1,/^show \[all/ d
-        silent % s/ star$//
+        silent! % s/ star$//
+        silent! % s/^star$//
     endif
+endfunction
+
+" HTML stipping functions
+function! s:crude_lexer()
+    " i.e. one tag per line
+    silent! % s/\(<[^>]*>\)/\r\1\r/g
+endfunction
+
+function! s:strip_scripts()
+    silent! g/<script.*>/-1;/<\/script>/+1d
+endfunction
+
+function! s:delete_tags()
+    silent! g/^<[^>]*>$/d
+endfunction
+
+function! s:delete_blanks()
+    silent! g/^[ ]*$/d
+endfunction
+
+function s:strip_raw_html()
+    call <SID>crude_lexer()
+    call <SID>strip_scripts()
+    call <SID>delete_tags()
+    call <SID>delete_blanks()
 endfunction
 
 function s:suggest_words(A,C,P)
@@ -317,8 +337,8 @@ endfunction
 
 nnoremap <silent> KK :call <SID>inline_help()<CR>
 xnoremap <silent> KK :call <SID>inline_help()<CR>
-command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_help(<f-args>)
 command! Lookup call <SID>inline_help()
+command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_help(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
 
