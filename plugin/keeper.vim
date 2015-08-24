@@ -335,8 +335,9 @@ function s:suggest_words(A,C,P)
     return [ expand("<cword>") ] + split( getline(".") )
 endfunction
 
-nnoremap <silent> KK :call <SID>inline_help()<CR>
-xnoremap <silent> KK :call <SID>inline_help()<CR>
+nnoremap <silent> <Plug>InlineHelp :call <SID>inline_help()<cr>
+nmap <silent> KK <Plug>InlineHelp
+xmap <silent> KK <Plug>InlineHelp
 command! Lookup call <SID>inline_help()
 command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_help(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
