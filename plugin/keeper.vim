@@ -3,6 +3,9 @@ if exists("g:loaded_keeper")
 endif
 let g:loaded_keeper = 1
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 let s:base_path = expand("<sfile>:p:h")
 function! s:inline_help(...)
     " Account for the special case non-external keywordprg
@@ -343,3 +346,5 @@ command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
 
+let &cpo = s:save_cpo 
+unlet s:save_cpo
