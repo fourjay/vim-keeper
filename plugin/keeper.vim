@@ -348,13 +348,29 @@ command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
 
+function! s:suggest_manprograms(...)
+    let candidates = [
+                \   "man",
+                \   "perldoc",
+                \   "pydoc",
+                \   "ansible-doc",
+                \ ]
+    let list = ""
+    for candidate in candidates
+        if executable( candidate )
+            let list .= candidate . "\n"
+        endif
+    endfor
+    return list
+endfunction
+
 " expose raw loadhelp
 function! s:format_external_help( program, keyword )
     let context = &filetype
     let command = a:program . " " . a:keyword
     call <SID>load_help(command, 'man', context)
 endfunction
-command! -nargs=+ ExternalHelp call <SID>format_external_help(<f-args>)
+command! -nargs=+ -complete=custom,<SID>suggest_manprograms ExternalHelp call <SID>format_external_help(<f-args>)
 
 let &cpo = s:save_cpo 
 unlet s:save_cpo
