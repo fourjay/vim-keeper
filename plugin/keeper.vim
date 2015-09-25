@@ -115,6 +115,7 @@ function s:load_help( help_program, search_term, context )
     " echom "searching on " . a:search_term . "..."
     " execute and load the output in a buffer
     "let external_help = system(  a:help_program . " " . a:search_term )
+    " echom "help_program is " . a:help_program
     silent let external_help = system(  a:help_program )
     " open split with reasonable height
     let helpbufname = "__HELP__"
@@ -267,6 +268,7 @@ let s:URL_mappings = {
             \"php"        :  s:ddg    . "!phpnet",
             \"css"        :  s:glucky . "site:cssdocs.org",
             \"perl"       :  s:glucky . "site:perldoc.perl.org",
+            \"ansible"    :  s:glucky . "site:docs.ansible.com",
             \"javascript" :  s:ddg    . "!mdn+javascript",
             \"html"       :  s:ddg    . "!mdn+html",
             \"text"       :  s:ddg    . "!ahd",
@@ -345,6 +347,14 @@ command! Lookup call <SID>inline_help()
 command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_help(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
+
+" expose raw loadhelp
+function! s:format_external_help( program, keyword )
+    let context = &filetype
+    let command = a:program . " " . a:keyword
+    call <SID>load_help(command, 'man', context)
+endfunction
+command! -nargs=+ ExternalHelp call <SID>format_external_help(<f-args>)
 
 let &cpo = s:save_cpo 
 unlet s:save_cpo
