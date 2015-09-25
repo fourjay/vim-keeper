@@ -348,17 +348,29 @@ command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
 
+let s:man_programs = {
+            \   "sh"      : "man",
+            \   "perl"    : "perldoc",
+            \   "python"  : "pydoc",
+            \   "ansible" : "ansible-doc",
+            \ }
 function! s:suggest_manprograms(...)
-    let candidates = [
-                \   "man",
-                \   "perldoc",
-                \   "pydoc",
-                \   "ansible-doc",
-                \ ]
+    " return the cword if there's alread a man program chosen
+    if a:2 =~ '\v^Xhelp \w+ '
+        return expand("<cword>") . "\n"
+    endif
     let list = ""
-    for candidate in candidates
+    let ft_match = get( s:man_programs, &filetype )
+    if ft_match != ''
+        if executable( ft_match )
+            let list .= ft_match . "\n"
+        endif
+    endif
+    for candidate in keys(s:man_programs)
         if executable( candidate )
-            let list .= candidate . "\n"
+            if ft_match != candidate
+                let list .= candidate . "\n"
+            endif
         endif
     endfor
     return list
@@ -368,9 +380,9 @@ endfunction
 function! s:format_external_help( program, keyword )
     let context = &filetype
     let command = a:program . " " . a:keyword
-    call <SID>load_help(command, 'man', context)
+    call <SID>load_help(command, a:keyword, context)
 endfunction
-command! -nargs=+ -complete=custom,<SID>suggest_manprograms ExternalHelp call <SID>format_external_help(<f-args>)
+command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
 let &cpo = s:save_cpo 
 unlet s:save_cpo
