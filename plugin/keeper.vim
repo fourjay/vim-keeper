@@ -164,7 +164,7 @@ function s:load_help( help_program, search_term, context )
     execute "setlocal syntax=" . b:parent_filetype . ".webhelp"
     call matchadd( "manReference", a:search_term )
     setlocal buftype=nofile nobuflisted bufhidden=wipe readonly
-    setlocal noswapfile nowritebackup viminfo= nobackup noshelltemp history=0
+    setlocal noswapfile nowritebackup viminfo= nobackup noshelltemp
     setlocal scrolloff=2
 
     normal! 3G
