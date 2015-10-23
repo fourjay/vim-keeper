@@ -377,10 +377,15 @@ function! s:suggest_manprograms(...)
 endfunction
 
 " expose raw loadhelp
-function! s:format_external_help( program, keyword )
+function! s:format_external_help( ... )
     let context = &filetype
-    let command = a:program . " " . a:keyword
-    call <SID>load_help(command, a:keyword, context)
+    let command = a:1
+    if a:0 > 1
+        let l:keyword = a:2
+    else
+        let l:keyword = expand("<cword>")
+    endif
+    call <SID>load_help(command . " " . l:keyword , l:keyword, context)
 endfunction
 command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
