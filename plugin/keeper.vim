@@ -45,16 +45,6 @@ function! s:inline_help(...)
     endif
     let help_program = <SID>get_webman_syscall( context, keyword )
 
-    " Allow user settings for keywordprg to override webman
-    if &keywordprg !~ "^man" && executable( &keywordprg )
-        let help_program = &keywordprg
-    else
-        " but keep man for these filetypes
-        if &filetype ==# "c" || &filetype ==# "sh"
-            let help_program = &keywordprg
-        endif
-    endif
-
     call <SID>load_help(help_program, keyword, context)
 endfunction
 
@@ -361,6 +351,9 @@ function! s:suggest_manprograms(...)
     endif
     let list = ""
     let ft_match = get( s:man_programs, &filetype )
+    if &keywordprg != ""
+        let ft_match = &keywordprg
+    endif
     if ft_match != ''
         if executable( ft_match )
             let list .= ft_match . "\n"
