@@ -255,18 +255,29 @@ endfunction
 let s:ddg = "http://duckduckgo.com/?q="
 let s:glucky ="http://www.google.com/search?sourceid=navclient&btnI=I&q="
 let s:URL_mappings = {
-            \"php"        :  s:ddg    . "!phpnet",
-            \"css"        :  s:glucky . "site:cssdocs.org",
-            \"perl"       :  s:glucky . "site:perldoc.perl.org",
             \"ansible"    :  s:glucky . "site:docs.ansible.com",
-            \"javascript" :  s:ddg    . "!mdn+javascript",
+            \"css"        :  s:glucky . "site:cssdocs.org",
+            \"docker"     :  s:glucky . "site:docs.docker.com",
             \"html"       :  s:ddg    . "!mdn+html",
-            \"text"       :  s:ddg    . "!ahd",
+            \"javascript" :  s:ddg    . "!mdn+javascript",
             \"mail"       :  s:ddg    . "!ahd",
             \"make"       :  s:glucky . "site:www.gnu.org",
-            \"wiki"       :  s:ddg    . "!wikipedia",
+            \"perl"       :  s:glucky . "site:perldoc.perl.org",
+            \"php"        :  s:ddg    . "!phpnet",
+            \"python"     :  s:glucky . "site:docs.python.org",
+            \"ruby"       :  s:glucky . "site:ruby-doc.org",
+            \"text"       :  s:ddg    . "!ahd",
             \"thesaurus"  :  "http://www.thesaurus.com/browse/",
+            \"wiki"       :  s:ddg    . "!wikipedia",
             \}
+
+function! KeeperURLRegisterGoogle(filetype, site)
+    let s:URL_mappings[a:filetype]  =  s:glucky . "site:" . a:site
+endfunction
+
+function! KeeperURLRegisterDDG(filetype, bang)
+    let s:URL_mappings[a:filetype]  =  s:ddg . "!" . a:bang
+endfunction
 
 function! s:geturl(context, search_term)
     " convention for straight URL
