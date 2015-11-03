@@ -173,7 +173,7 @@ function s:load_help( help_program, search_term, context )
     nnoremap <buffer> <silent> <C-j>  :call <SID>search_next()<CR>
     " Act like less
     nnoremap <buffer> d <C-d>
-    nnoremap <buffer> <Space> <C-d>
+    nnoremap <buffer> <nowait>  <Space> <C-d>
     nnoremap <buffer> u <C-u>
     nnoremap <buffer> <silent> q :bdelete<Cr>
     nnoremap <buffer> n nzt
