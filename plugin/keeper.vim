@@ -284,10 +284,19 @@ function! s:geturl(context, search_term)
     if a:context ==# "url"
         return a:search_term
     endif
-    if ! has_key( s:URL_mappings, a:context )
-        let url = s:ddg . "!" . a:context
+    let l:context = a:context
+    if l:context =~ '[.]'
+        for c in split(l:context, '[.]')
+            if has_key( s:URL_mappings, c )
+                let l:context = c
+                break
+            endif
+        endfor
+    endif
+    if ! has_key( s:URL_mappings, l:context )
+        let url = s:ddg . "!" . l:context
     else
-        let url = s:URL_mappings[ a:context ]
+        let url = s:URL_mappings[ l:context ]
     endif
     let url .= "+" . a:search_term
     return url
