@@ -18,7 +18,7 @@ function! s:inline_help(...)
     " if we've passed in a keyword, we want a random search
     " Else look at the current word (AKA "like K")
     if  a:0
-        let keyword = a:1
+        let keyword = substitute( a:1, " ", "+", "g" )
     else
         let keyword = <SID>get_searchword()  " expand('<cword>')
     endif
