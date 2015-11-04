@@ -39,11 +39,15 @@ modeled on vim's existing keyword map.
 
 *COMMANDS*
 
-`:Lookup` does a context sensitive lookup on the current word
-
 `:Help` does a context sensitive lookup on an arbitrary keyword.
+Supports tab completion with sensible defaults
+
+`:XHelp` does a context sensitive lookup on an arbitrary keyword using and 
+external program (defaults to a keywordprg if defined).
 
 `:Wikipedia STRING` searches wikipedia for STRING
+
+`:Lookup` does a context sensitive lookup on the current word
 
 `:Thesaurus STRING` searches online thesaurus for STRING
 
@@ -51,7 +55,7 @@ modeled on vim's existing keyword map.
 Requires a text based browser command somewhere in your path.
 Supports w3m, lynx, elinks, links and will fall back to curl or wget
 
-**OTHER**
+**RELEATED TOOLS**
 
     https://github.com/yuratomo/w3m.vim
     A fairly feature complete wrapper around w3m
