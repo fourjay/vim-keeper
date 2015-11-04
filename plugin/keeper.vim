@@ -208,8 +208,9 @@ function s:search_seek(offset)
     endif
 endfunction
 
-function! s:wikipedia(search_term)
-    call <SID>inline_help( a:search_term, "wiki")
+function! s:wikipedia(...)
+    let search_term = join( a:000, "+" )
+    call <SID>inline_help( search_term, "wiki")
 endfunction
 
 function! s:thesaurus(search_term)
