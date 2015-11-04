@@ -32,7 +32,7 @@ This program looks for a text based browser, falling back to curl or
 wget if available. w3m, lynx or (e)links are clearly better.
 
 ================================================================================
-3. APPROACH                                *KeeperApproach*
+2. APPROACH                                *KeeperApproach*
 
 There are two basic tools to try to approach DWIM.
 
@@ -46,9 +46,13 @@ There are two basic tools to try to approach DWIM.
 
 In a mapped filetype, various commands will stuff hopefully appropriate
 and syntax highlighted help text in a separate buffer. This buffer has
-several helpful shortcuts, in particular the searched for word is
-highlighted and readily in the search buffer, so "n" will hop through
-the fetched documentation.
+several helpful shortcuts:
+
+    n       search next keyword
+    <C-]>   will generate a new search with on the word under the cursor.
+    <C-T>   Back up the chain to the previous search
+    q       Close window
+    <space> page down
 
 ================================================================================
 4. MAPPINGS                               *KeeperMappings*
@@ -83,6 +87,7 @@ roughly like an enhanced, web based version of keyword search.
 :WikiPedia                                *:WikiPedia*
     Like :Help, but override the default search site and use wikipedia
 
+================================================================================
 4.3 Configuration                         *KeeperConfiguration*
 
 Register a website by filetype.
