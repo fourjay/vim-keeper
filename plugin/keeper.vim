@@ -262,6 +262,7 @@ let s:URL_mappings = {
             \"c"          :  s:glucky . "site:en.cppreference.com",
             \"css"        :  s:glucky . "site:cssdocs.org",
             \"docker"     :  s:glucky . "site:docs.docker.com",
+            \"fail2ban"   :  s:glucky . "site:www.fail2ban.org",
             \"go"         :  s:glucky . "site:golang.org/doc",
             \"haskell"    :  s:ddg    . "!hoogle",
             \"html"       :  s:ddg    . "!mdn+html",
