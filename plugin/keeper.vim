@@ -256,10 +256,14 @@ let s:ddg = "http://duckduckgo.com/?q="
 let s:glucky ="http://www.google.com/search?sourceid=navclient&btnI=I&q="
 let s:URL_mappings = {
             \"ansible"    :  s:glucky . "site:docs.ansible.com",
+            \"c"          :  s:glucky . "site:en.cppreference.com",
             \"css"        :  s:glucky . "site:cssdocs.org",
             \"docker"     :  s:glucky . "site:docs.docker.com",
+            \"go"         :  s:glucky . "site:golang.org/doc",
+            \"haskell"    :  s:ddg    . "!hoogle",
             \"html"       :  s:ddg    . "!mdn+html",
             \"javascript" :  s:ddg    . "!mdn+javascript",
+            \"lua"        :  s:glucky . "site:www.lua.org",
             \"mail"       :  s:ddg    . "!ahd",
             \"make"       :  s:glucky . "site:www.gnu.org",
             \"perl"       :  s:glucky . "site:perldoc.perl.org",
