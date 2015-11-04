@@ -6,8 +6,9 @@ Browse web documentation in vim
 CONTENTS                            *KeeperContents*
 
     1. Introduction.................|KeeperIntro|
-    2. Usage........................|KeeperUsage|
-    3. Mappings.....................|KeeperMappings|
+    2. Approach.....................|KeeperApproach|
+    3. Usage........................|KeeperUsage|
+    4. Mappings.....................|KeeperMappings|
 
 ================================================================================
 1. INTRODUCTION                                *KeeperIntro*
@@ -31,7 +32,17 @@ This program looks for a text based browser, falling back to curl or
 wget if available. w3m, lynx or (e)links are clearly better.
 
 ================================================================================
-2. USAGE                                   *KeeperUsage*
+3. APPROACH                                *KeeperApproach*
+
+There are two basic tools to try to approach DWIM.
+
+    1) Use Search Engine automatic resolution. The plugin has support for
+       Google "l'm feeling lucky" and DuckDuckGo "bang" searches
+
+    2) Search scope is guided by filetype
+
+================================================================================
+3. USAGE                                   *KeeperUsage*
 
 In a mapped filetype, various commands will stuff hopefully appropriate
 and syntax highlighted help text in a separate buffer. This buffer has
@@ -40,20 +51,60 @@ highlighted and readily in the search buffer, so "n" will hop through
 the fetched documentation.
 
 ================================================================================
-3. MAPPINGS                               *KeeperMappings*
+4. MAPPINGS                               *KeeperMappings*
 
-3.1 Help Key                              *KK* *KeeperKeyWordPrg*
+4.1 Help Key                              *KK* *KeeperKeyWordPrg*
 
-KK works as the web based version of K.
+KK is mapped in normal mode (a doubled up version of K). It behaves
+roughly like an enhanced, web based version of keyword search.
+
+4.2 Commands                              *KeeperCommands* 
+
+:Help                                      *:Help*
+    Freeform lookup. Takes an optional argument, which is then searched
+    for, otherwise use word under cursor. The intent is something closer
+    to man or help, rather then a keywordprg. Uses filetype to guide
+    website selection. Tab completion is supported for words on the line
+    (although not very sophisticated)
+
+:XHelp                                      *:XHelp*
+    Run [E]XternalHelp commnd in split. If buffer has a keywordprg, then
+    use that, otherwise check a set of defaults. Command takes a two
+    (optional) parameters:
+        keywordprg
+        Word
+    Tab completion is supported. If nothing is provided then word under
+    cursor is used with keywordprg. 
 
 :Lookup                                   *:Lookup*
     Lookup up current word using, with a guess to appropriate source,
     otherwise defaults to WikiPedia
 
-:Help                                      *:Help*
-    Freeform lookup. Takes an argument, which is then searched for.
-    The intent is something closer to man or help, rather then a
-    keywordprg
-
-:WikiPedia                                      *:WikiPedia*
+:WikiPedia                                *:WikiPedia*
     Like :Help, but override the default search site and use wikipedia
+
+4.3 Configuration                         *KeeperConfiguration*
+
+Register a website by filetype.
+
+Many of the default filetypes have default maps. You can add a filetype,
+search with one of these two calls
+
+    call KeeperURLRegisterGoogle(filetype, website)
+    call KeeperURLRegisterDDG(filetype, bang)
+
+Suggested path:
+
+    1) Decide on a filetype name
+
+        Example: symfony
+
+    2) set filetype to dotted combo
+
+        Example: set ft=symfony.php
+
+    3) Call command with mapping
+
+        Example KeeperURLRegisterGoogle( 'symfony', 'symfony.com/doc/current/reference' )
+
+This can all be done in a custom ftplugin (vim/after/ftplugin)
