@@ -106,7 +106,15 @@ function s:load_help( help_program, search_term, context )
     " execute and load the output in a buffer
     "let external_help = system(  a:help_program . " " . a:search_term )
     " echom "help_program is " . a:help_program
+    " echom "help_program " . a:help_program . " search_term " . a:search_term . " context " . a:context
     silent let external_help = system(  a:help_program )
+
+    " retry with web if local program errors
+    if v:shell_error != 0 && a:help_program !~ 'http'
+        call <SID>inline_help(a:search_term )
+        return
+    endif
+
     " open split with reasonable height
     let helpbufname = "__HELP__"
     let large_height = &lines * 2 / 3
@@ -370,7 +378,8 @@ function! s:suggest_manprograms(...)
             let list .= ft_match . "\n"
         endif
     endif
-    for candidate in keys(s:man_programs)
+    for ft_candidate in keys(s:man_programs)
+        let candidate = s:man_programs[ ft_candidate ]
         if executable( candidate )
             if ft_match != candidate
                 let list .= candidate . "\n"
