@@ -172,12 +172,6 @@ function s:load_help( help_program, search_term, context )
     " menmonic history navigation
     nnoremap <buffer> <silent> <C-k>  :call <SID>search_previous()<CR>
     nnoremap <buffer> <silent> <C-j>  :call <SID>search_next()<CR>
-    " Act like less
-    nnoremap <buffer> <nowait>  d <C-d>
-    nnoremap <buffer> <nowait>  <Space> <C-d>
-    nnoremap <buffer> u <C-u>
-    nnoremap <buffer> <silent> q :bdelete<Cr>
-    nnoremap <buffer> n nzt
 endfunction
 
 function s:search_previous()
