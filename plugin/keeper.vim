@@ -153,9 +153,6 @@ function s:load_help( help_program, search_term, context )
     setlocal filetype=webhelp
     execute "setlocal syntax=" . b:parent_filetype . ".webhelp"
     call matchadd( "manReference", a:search_term )
-    setlocal buftype=nofile nobuflisted bufhidden=wipe readonly
-    setlocal noswapfile nowritebackup viminfo= nobackup noshelltemp
-    setlocal scrolloff=2
 
     normal! 3G
     execute "silent normal! /" . a:search_term  . "\<CR>zt"
@@ -164,21 +161,6 @@ function s:load_help( help_program, search_term, context )
     else
         normal! gg
     endif
-
-    " Emulate tagstack
-    nnoremap <buffer> <C-]> :call <SID>inline_help()<CR>
-    nnoremap <buffer> gf :call <SID>inline_help()<CR>
-    nnoremap <buffer> <silent> <C-t> :call <SID>search_previous()<CR>
-    " menmonic history navigation
-    nnoremap <buffer> <silent> <C-k>  :call <SID>search_previous()<CR>
-    nnoremap <buffer> <silent> <C-j>  :call <SID>search_next()<CR>
-endfunction
-
-function s:search_previous()
-    call <SID>search_seek(-1)
-endfunction
-function s:search_next()
-    call <SID>search_seek(1)
 endfunction
 
 function s:search_seek(offset)
@@ -202,6 +184,9 @@ function s:search_seek(offset)
         call <SID>inline_help( stacked_searchword )
     endif
 endfunction
+
+nnoremap <silent> <Plug>SearchPrevious :call <SID>search_seek(-1)<cr>
+nnoremap <silent> <Plug>SearchNext :call <SID>search_seek()<cr>
 
 function! s:wikipedia(...)
     let search_term = join( a:000, "+" )
