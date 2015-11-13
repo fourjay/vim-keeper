@@ -23,6 +23,7 @@ set scrolloff=2
 " navigation
 nmap <silent> <C-]> <Plug>InlineHelp
 nmap <silent> gf    <Plug>InlineHelp
+nmap <nowait> <silent> K <Plug>InlineHelp
 
 nmap <silent> <C-t> <Plug>SearchPrevious
 
