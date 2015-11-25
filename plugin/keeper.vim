@@ -144,6 +144,7 @@ function s:load_help( help_program, search_term, context )
 
     echom "results of: " . a:help_program . "..."
 
+    let simple_search_term = substitute( a:search_term, '+.*', "", "" )
     call append(0, "Search results from " . a:help_program )
     call append(0, "------------------------------------------")
     call append(0, split(external_help, '\v\n'))
@@ -155,14 +156,14 @@ function s:load_help( help_program, search_term, context )
 
     call append(0, "=====================================================================")
     call append(0, "              Ctrl-]:new search Ctrl-T:back")
-    call append(0, "SHORTCUT-KEYS u:up d:down n?:find next " . a:search_term . " q:quit")
+    call append(0, "SHORTCUT-KEYS u:up d:down n?:find next " . simple_search_term . " q:quit")
 
     setlocal filetype=webhelp
     execute "setlocal syntax=" . b:parent_filetype . ".webhelp"
-    call matchadd( "manReference", a:search_term )
+    call matchadd( "manReference", simple_search_term )
 
     normal! 3G
-    execute "silent normal! /" . a:search_term  . "\<CR>zt"
+    execute "silent normal! /" . simple_search_term  . "\<CR>zt"
     if a:context != "url"
         let @/ = a:search_term
     else
@@ -202,6 +203,14 @@ endfunction
 
 function! s:thesaurus(search_term)
     call <SID>inline_help( a:search_term, "thesaurus")
+endfunction
+
+function! s:stackexchange(search_term)
+    let search_filetype = &filetype
+    if exists( "b:parent_filetype" )
+        let search_filetype = b:parent_filetype
+    endif
+    call <SID>inline_help(a:search_term . "+" . search_filetype , 'stackexchange', search_filetype )
 endfunction
 
 let s:browser = ""
@@ -267,6 +276,7 @@ let s:URL_mappings = {
             \"text"       :  s:ddg    . "!ahd",
             \"thesaurus"  :  "http://www.thesaurus.com/browse/",
             \"wiki"       :  s:ddg    . "!wikipedia",
+            \"stackexchange"  :  s:glucky    . "site:stackexchange.com",
             \}
 
 function! KeeperURLRegisterGoogle(filetype, site)
@@ -355,6 +365,7 @@ command! Lookup call <SID>inline_help()
 command! -nargs=1 -complete=customlist,<SID>suggest_words Help call <SID>inline_help(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
+command! -nargs=1 -complete=customlist,<SID>suggest_words Stackexchange call <SID>stackexchange(<f-args>)
 
 let s:man_programs = {
             \   "sh"      : "man",
