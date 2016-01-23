@@ -273,6 +273,7 @@ let s:URL_mappings = {
             \"php"        :  s:ddg    . "!phpnet",
             \"python"     :  s:glucky . "site:docs.python.org",
             \"ruby"       :  s:glucky . "site:ruby-doc.org",
+            \"sh"         :  s:glucky . "site:www.gnu.org",
             \"text"       :  s:ddg    . "!ahd",
             \"thesaurus"  :  "http://www.thesaurus.com/browse/",
             \"wiki"       :  s:ddg    . "!wikipedia",
