@@ -126,6 +126,7 @@ function s:load_help( help_program, search_term, context )
     endif
     " If we are re-using, then temporarily make writeable warning
     setlocal noreadonly
+    setlocal modifiable
     " set up clean buffer
     normal! ggdG
     if !  exists( "b:parent_filetype" )
