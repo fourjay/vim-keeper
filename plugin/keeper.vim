@@ -330,6 +330,9 @@ function! s:cleanup_by_context(context)
         silent! % s/ star$//
         silent! % s/^star$//
     endif
+    " strip a single apostrophe in a line
+    " This makes syntax highlighting more robust
+    silent!  g/^[^']*'[^']*$/s/'//
 endfunction
 
 " HTML stipping functions
