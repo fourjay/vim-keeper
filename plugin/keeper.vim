@@ -153,7 +153,8 @@ function s:load_help( help_program, search_term, context )
     if browser == "curl" || browser == "wget"
         call <SID>strip_raw_html()
     endif
-    call <SID>cleanup_by_context(a:context)
+    call s:cleanup_by_context(a:context)
+    call s:generic_cleanup()
 
     call append(0, "=====================================================================")
     call append(0, "              Ctrl-]:new search Ctrl-T:back")
@@ -330,10 +331,16 @@ function! s:cleanup_by_context(context)
         silent! % s/ star$//
         silent! % s/^star$//
     endif
+endfunction
+
+function! s:generic_cleanup()
     " strip a single apostrophe in a line
     " This makes syntax highlighting more robust
-    silent!  g/^[^']*'[^']*$/s/'//
+    silent! g/^[^']*'[^']*$/s/'//
+    " clean blamk div
+    silent! g/^\s*[*-+]\s*$/d
 endfunction
+
 
 " HTML stipping functions
 function! s:crude_lexer()
