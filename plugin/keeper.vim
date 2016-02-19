@@ -164,7 +164,8 @@ function s:load_help( help_program, search_term, context )
     call matchadd( "manReference", simple_search_term )
 
     normal! 3G
-    execute "silent normal! /" . simple_search_term  . "\<CR>zt"
+    call search( simple_search_term, "w")
+    normal zt
     if a:context != "url"
         let @/ = a:search_term
     else
