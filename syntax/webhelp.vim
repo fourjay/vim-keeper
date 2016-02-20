@@ -9,7 +9,7 @@ syntax match webHelpUrl        '\v[a-zA-Z0-9._]+\.(com|net|edu|org)'
 
 highlight def link webHelpUrl Identifier 
 
-syntax match webHelpMarkers    '\([*+-•] \)\@<=.*'
-highlight link webHelpMarkers Operator
+syntax match webHelpMarkers    '\(^\s*[*+-] \)\@<=.*'
+highlight link webHelpMarkers String
 
 let b:current_syntax = "webhelp"
