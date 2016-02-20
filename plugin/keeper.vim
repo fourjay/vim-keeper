@@ -160,7 +160,7 @@ function s:load_help( help_program, search_term, context )
     call append(0, "              Ctrl-]:new search Ctrl-T:back")
     call append(0, "SHORTCUT-KEYS u:up d:down n?:find next " . simple_search_term . " q:quit")
 
-    execute "setlocal filetype=webhelp." . b:parent_filetype
+    execute "setlocal filetype=" . b:parent_filetype . ".webhelp"
     call matchadd( "manReference", simple_search_term )
 
     normal! 3G
