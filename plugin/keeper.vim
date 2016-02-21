@@ -106,7 +106,11 @@ function s:load_help( help_program, search_term, context )
     " execute and load the output in a buffer
     "let external_help = system(  a:help_program . " " . a:search_term )
     " echom "help_program is " . a:help_program
-    silent let external_help = system(  a:help_program )
+    if exists(':VimProcBang')
+        let external_help = vimproc#system( a:help_program )
+    else
+        silent let external_help = system(  a:help_program )
+    endif
 
     " retry with web if local program errors
     if v:shell_error != 0 && a:help_program !~ 'http'
