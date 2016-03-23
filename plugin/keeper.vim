@@ -273,7 +273,7 @@ let s:URL_mappings = {
             \"mail"       :  s:ddg    . "!ahd",
             \"make"       :  s:glucky . "site:www.gnu.org",
             \"mason"      :  s:glucky . "site:www.masonbook.com",
-            \"muttrc"     :  s:glucky . "site:www.mutt.org",
+            \"muttrc"     :  s:glucky . "site:www.mutt.org/doc/manual",
             \"perl"       :  s:glucky . "site:perldoc.perl.org",
             \"pfmain"     :  s:glucky . "site:www.postfix.org",
             \"php"        :  s:ddg    . "!phpnet",
