@@ -274,6 +274,7 @@ let s:URL_mappings = {
             \"make"       :  s:glucky . "site:www.gnu.org",
             \"mason"      :  s:glucky . "site:www.masonbook.com",
             \"muttrc"     :  s:glucky . "site:www.mutt.org/doc/manual",
+            \"nginx"      :  s:glucky . "site:nginx.org/en/docs/",
             \"perl"       :  s:glucky . "site:perldoc.perl.org",
             \"pfmain"     :  s:glucky . "site:www.postfix.org",
             \"php"        :  s:ddg    . "!phpnet",
