@@ -270,6 +270,7 @@ let s:URL_mappings = {
             \"javascript" :  s:ddg    . "!mdn+javascript",
             \"jquery"     :  s:glucky . "site:api.jquery.com",
             \"lua"        :  s:glucky . "site:www.lua.org",
+            \"lighttpd"   :  s:glucky . "site:redmine.lighttpd.net/projects/1/wiki/Docs",
             \"mail"       :  s:ddg    . "!ahd",
             \"make"       :  s:glucky . "site:www.gnu.org",
             \"mason"      :  s:glucky . "site:www.masonbook.com",
