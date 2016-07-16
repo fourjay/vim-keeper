@@ -213,7 +213,9 @@ function! s:search_multiwords(...)
         let search_term = <SID>get_visual_selection()
     endif
     if len(search_term) == 0
-        call <SID>inline_help( expand('<cword>') )
+        let cword = expand("<cword>")
+        echom "got cword " . cword
+        call <SID>inline_help( cword )
     else
         call <SID>inline_help( search_term )
     endif
@@ -221,9 +223,22 @@ endfunction
 
 function! s:get_visual_selection()
     let saved_a = @a
+    let saved_pos = getcurpos()
+    " This moves cursor position
     normal! gv"ay
+    call setpos( ".", saved_pos )
     let found = @a
     let @a = saved_a
+    " don't use a non-recent visual selection.
+    if exists( 'b:_last_visual_search' )
+        if b:_last_visual_search =~ found
+            let found = ''
+        endif
+    endif
+    if len(found) > 0
+        let b:_last_visual_search = found
+    endif
+    let found = substitute(found, " [ ]*", "+", '')
     return found
 endfunction
 
