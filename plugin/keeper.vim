@@ -335,6 +335,7 @@ function! s:cleanup_by_context(context)
         silent! 1,/^show \[all/ d
         silent! % s/ star$//
         silent! % s/^star$//
+        silent! % s/star\>//
     endif
 endfunction
 
