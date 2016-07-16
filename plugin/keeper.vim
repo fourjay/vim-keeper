@@ -209,7 +209,22 @@ endfunction
 
 function! s:search_multiwords(...)
     let search_term = join( a:000, "+" )
-    call <SID>inline_help( search_term )
+    if len(search_term) == 0
+        let search_term = <SID>get_visual_selection()
+    endif
+    if len(search_term) == 0
+        call <SID>inline_help( expand('<cword>') )
+    else
+        call <SID>inline_help( search_term )
+    endif
+endfunction
+
+function! s:get_visual_selection()
+    let saved_a = @a
+    normal! gv"ay
+    let found = @a
+    let @a = saved_a
+    return found
 endfunction
 
 function! s:thesaurus(search_term)
@@ -382,7 +397,8 @@ function s:suggest_words(A,C,P)
     return [ expand("<cword>") ] + split( getline(".") )
 endfunction
 
-nnoremap <silent> <Plug>InlineHelp :call <SID>inline_help()<cr>
+" nmap <silent> <Plug>InlineHelp :call <SID>inline_help()<cr>
+map <silent> <Plug>InlineHelp :call <SID>search_multiwords()<cr>
 nmap <silent> KK <Plug>InlineHelp
 xmap <silent> KK <Plug>InlineHelp
 command! Lookup call <SID>inline_help()
