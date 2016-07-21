@@ -26,6 +26,7 @@ provide useful help "automagically". This comes pretty close.
 * Allows freeform searching
 * Is text based
 * Leverages standard .vimrc configuration stanzas to modify behavior.
+* No python dependencies
 
 ## Usage
 
