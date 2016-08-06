@@ -1,4 +1,4 @@
-if exists("g:loaded_keeper")
+if exists('g:loaded_keeper')
     finish
 endif
 let g:loaded_keeper = 1
@@ -6,19 +6,19 @@ let g:loaded_keeper = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:base_path = expand("<sfile>:p:h")
+let s:base_path = expand('<sfile>:p:h')
 function! s:inline_help(...)
     " Account for the special case non-external keywordprg
-    if &keywordprg ==# ":help" && &filetype ==# "vim"
-        execute "normal K"
+    if &keywordprg ==# ':help' && &filetype ==# 'vim'
+        execute 'normal K'
         return
     endif
 
-    let keyword = ""
+    let keyword = ''
     " if we've passed in a keyword, we want a random search
     " Else look at the current word (AKA "like K")
     if  a:0
-        let keyword = substitute( a:1, " ", "+", "g" )
+        let keyword = substitute( a:1, ' ', '+', 'g' )
     else
         let keyword = <SID>get_searchword()  " expand('<cword>')
     endif
@@ -26,12 +26,12 @@ function! s:inline_help(...)
     let context = 'wiki'
     if a:0 == 2
         let context = a:2
-    elseif &filetype == 'webhelp'
+    elseif &filetype ==# 'webhelp'
         " allow recursive lookup in the help output
         let context=b:parent_filetype
     " If we don't have a better option
-    elseif &filetype ==# ""
-        let context = "wiki"
+    elseif &filetype ==# ''
+        let context = 'wiki'
     " Allow corcing context
     elseif a:0 > 1
         let context = a:2
@@ -39,9 +39,9 @@ function! s:inline_help(...)
         let context = <SID>get_cword_context()
     endif
 
-    let url = <SID>extract_url(getline("."))
-    if url != ""
-        let context = "url"
+    let url = <SID>extract_url(getline('.'))
+    if url !=# ''
+        let context = 'url'
     endif
     let help_program = <SID>get_webman_syscall( context, keyword )
 
@@ -49,15 +49,15 @@ function! s:inline_help(...)
 endfunction
 
 function! s:get_searchword()
-    let cline = getline(".")
+    let cline = getline('.')
     let url = <SID>extract_url(cline)
-    if url != ""
+    if url !=# ''
         return url
     endif
-    let selected = ""
-    if visualmode() == 'v'
+    let selected = ''
+    if visualmode() ==# 'v'
         let selected = <SID>get_visual()
-        let selected = substitute( selected, " ", "+", "g")
+        let selected = substitute( selected, ' ', '+', 'g')
         return selected
     endif
     return expand("\<cword>")
@@ -76,25 +76,25 @@ function! s:extract_url(cline)
     let TLDs = [ 'com', 'net', 'org' ]
     " matchstr (at least in my environment) doesn't uork with match alternate
     for tld in TLDs
-        let link_pattern = "[^ ][^ ]*[.]" . tld . "[:\/][/]*[^ ][^ ]*" 
+        let link_pattern = '[^ ][^ ]*[.]' . tld . '[:\/][/]*[^ ][^ ]*' 
         " echom "link_pattern is " . link_pattern
         let url = matchstr( a:cline, link_pattern)
         " echom "with tld " . tld . "url is " . url
-        if url != ""
+        if url !=# ''
             return url
         endif
     endfor
-    return ""
+    return ''
 endfunction
 
 function! s:get_cword_context()
     let keyword_syngrp = synIDattr(synID(line('.'), col('.'), 0), 'name')
-    if keyword_syngrp =~# "SQL"
-        return "sql"
-    elseif keyword_syngrp =~? "javascript"
-        return "javascript"
+    if keyword_syngrp =~# 'SQL'
+        return 'sql'
+    elseif keyword_syngrp =~? 'javascript'
+        return 'javascript'
     endif
-    if &filetype != ""
+    if &filetype !=# ''
         return &filetype
     endif
 
@@ -113,64 +113,64 @@ function s:load_help( help_program, search_term, context )
     endif
 
     " retry with web if local program errors
-    if v:shell_error != 0 && a:help_program !~ 'http'
+    if v:shell_error != 0 && a:help_program !~# 'http'
         call <SID>inline_help(a:search_term )
         return
     endif
 
     " open split with reasonable height
-    let helpbufname = "__HELP__"
+    let helpbufname = '__HELP__'
     let large_height = &lines * 2 / 3
     " reuse buffer as available
     let winnr = bufwinnr(helpbufname)
     if winnr > 0
-        execute winnr . "wincmd w"
+        execute winnr . 'wincmd w'
     else
-        silent execute large_height . "split " helpbufname
+        silent execute large_height . 'split ' helpbufname
     endif
     " If we are re-using, then temporarily make writeable warning
     setlocal noreadonly
     setlocal modifiable
     " set up clean buffer
     normal! ggdG
-    if !  exists( "b:parent_filetype" )
+    if !  exists( 'b:parent_filetype' )
         let b:parent_filetype = parent_filetype
     endif
 
     " Track previous searches for back
-    if ! exists( "b:search_stack" )
+    if ! exists( 'b:search_stack' )
         let b:search_stack = [ a:search_term ]
-    elseif exists ("b:search_stack_pointer")
+    elseif exists ('b:search_stack_pointer')
         " don't add search term to stack
         if b:search_stack[ b:search_stack_pointer ] !=# a:search_term
             let  b:search_stack  = b:search_stack + [ a:search_term ] 
         endif
     endif
 
-    echom "results of: " . a:help_program . "..."
+    echom 'results of: ' . a:help_program . '...'
 
-    let simple_search_term = substitute( a:search_term, '+.*', "", "" )
-    call append(0, "Search results from " . a:help_program )
-    call append(0, "------------------------------------------")
+    let simple_search_term = substitute( a:search_term, '+.*', '', '' )
+    call append(0, 'Search results from ' . a:help_program )
+    call append(0, '------------------------------------------')
     call append(0, split(external_help, '\v\n'))
     let browser = <SID>get_browser()
-    if browser == "curl" || browser == "wget"
+    if browser ==# 'curl' || browser ==# 'wget'
         call <SID>strip_raw_html()
     endif
     call s:cleanup_by_context(a:context)
     call s:generic_cleanup()
 
-    call append(0, "=====================================================================")
-    call append(0, "              Ctrl-]:new search Ctrl-T:back")
-    call append(0, "SHORTCUT-KEYS u:up d:down n?:find next " . simple_search_term . " q:quit")
+    call append(0, '=====================================================================')
+    call append(0, '              Ctrl-]:new search Ctrl-T:back')
+    call append(0, 'SHORTCUT-KEYS u:up d:down n?:find next ' . simple_search_term . ' q:quit')
 
-    execute "setlocal filetype=" . b:parent_filetype . ".webhelp"
-    call matchadd( "Delimiter", simple_search_term )
+    execute 'setlocal filetype=' . b:parent_filetype . '.webhelp'
+    call matchadd( 'Delimiter', simple_search_term )
 
     normal! 3G
-    call search( simple_search_term, "w")
-    normal zt
-    if a:context != "url"
+    call search( simple_search_term, 'w')
+    normal! zt
+    if a:context != 'url'
         let @/ = a:search_term
     else
         normal! gg
@@ -179,19 +179,19 @@ endfunction
 
 function s:search_seek(offset)
     let stack_size = 0
-    if ! exists("b:search_stack")
-        echo "no previous searches"
+    if ! exists('b:search_stack')
+        echo 'no previous searches'
     else
         let stack_size = len(b:search_stack)
     endif
-    if ! exists("b:search_stack_pointer")
+    if ! exists('b:search_stack_pointer')
         let b:search_stack_pointer = stack_size - 1
     endif
     if b:search_stack_pointer > stack_size
-        echo "at search stack end"
+        echo 'at search stack end'
     elseif b:search_stack_pointer < 0
         let b:search_stack_pointer = 0
-        echo "At beginning of search stack"
+        echo 'At beginning of search stack'
     else
         let b:search_stack_pointer = b:search_stack_pointer + a:offset
         let stacked_searchword = b:search_stack[b:search_stack_pointer]
@@ -203,18 +203,17 @@ nnoremap <silent> <Plug>SearchPrevious :call <SID>search_seek(-1)<cr>
 nnoremap <silent> <Plug>SearchNext :call <SID>search_seek()<cr>
 
 function! s:wikipedia(...)
-    let search_term = join( a:000, "+" )
-    call <SID>inline_help( search_term, "wiki")
+    let search_term = join( a:000, '+' )
+    call <SID>inline_help( search_term, 'wiki')
 endfunction
 
 function! s:search_multiwords(...)
-    let search_term = join( a:000, "+" )
+    let search_term = join( a:000, '+' )
     if len(search_term) == 0
         let search_term = <SID>get_visual_selection()
     endif
     if len(search_term) == 0
-        let cword = expand("<cword>")
-        echom "got cword " . cword
+        let cword = expand('<cword>')
         call <SID>inline_help( cword )
     else
         call <SID>inline_help( search_term )
@@ -226,7 +225,7 @@ function! s:get_visual_selection()
     let saved_pos = getcurpos()
     " This moves cursor position
     normal! gv"ay
-    call setpos( ".", saved_pos )
+    call setpos( '.', saved_pos )
     let found = @a
     let @a = saved_a
     " don't use a non-recent visual selection.
@@ -238,20 +237,20 @@ function! s:get_visual_selection()
     if len(found) > 0
         let b:_last_visual_search = found
     endif
-    let found = substitute(found, " [ ]*", "+", '')
+    let found = substitute(found, ' [ ]*', '+', '')
     return found
 endfunction
 
 function! s:thesaurus(search_term)
-    call <SID>inline_help( a:search_term, "thesaurus")
+    call <SID>inline_help( a:search_term, 'thesaurus')
 endfunction
 
 function! s:stackexchange(search_term)
     let search_filetype = &filetype
-    if exists( "b:parent_filetype" )
+    if exists( 'b:parent_filetype' )
         let search_filetype = b:parent_filetype
     endif
-    call <SID>inline_help(a:search_term . "+" . search_filetype , 'stackexchange', search_filetype )
+    call <SID>inline_help(a:search_term . '+' . search_filetype , 'stackexchange', search_filetype )
 endfunction
 
 let s:browser = ""
@@ -287,57 +286,57 @@ function! s:get_browser_syscall()
 
 
     let browser = <SID>get_browser()
-    return  browser . "  " . browser_list[browser]
+    return  browser . '  ' . browser_list[browser]
 endfunction
 
-let s:ddg = "http://duckduckgo.com/?q="
-let s:glucky ="http://www.google.com/search?sourceid=navclient&btnI=I&q="
+let s:ddg = 'http://duckduckgo.com/?q='
+let s:glucky ='http://www.google.com/search?sourceid=navclient&btnI=I&q='
 let s:URL_mappings = {
-            \"ansible"    :  s:glucky . "site:docs.ansible.com",
-            \"apache"     :  s:glucky . "site:httpd.apache.org/docs",
-            \"c"          :  s:glucky . "site:en.cppreference.com",
-            \"css"        :  s:glucky . "site:cssdocs.org",
-            \"docker"     :  s:glucky . "site:docs.docker.com",
-            \"fail2ban"   :  s:glucky . "site:www.fail2ban.org",
-            \"go"         :  s:glucky . "site:golang.org/doc",
-            \"haskell"    :  s:ddg    . "!hoogle",
-            \"html"       :  s:ddg    . "!mdn+html",
-            \"javascript" :  s:ddg    . "!mdn+javascript",
-            \"jquery"     :  s:glucky . "site:api.jquery.com",
-            \"lua"        :  s:glucky . "site:www.lua.org",
-            \"lighttpd"   :  s:glucky . "site:redmine.lighttpd.net/projects/1/wiki/Docs",
-            \"mail"       :  s:ddg    . "!ahd",
-            \"make"       :  s:glucky . "site:www.gnu.org",
-            \"mason"      :  s:glucky . "site:www.masonbook.com",
-            \"muttrc"     :  s:glucky . "site:www.mutt.org/doc/manual",
-            \"nginx"      :  s:glucky . "site:nginx.org/en/docs/",
-            \"perl"       :  s:glucky . "site:perldoc.perl.org",
-            \"pfmain"     :  s:glucky . "site:www.postfix.org",
-            \"php"        :  s:ddg    . "!phpnet",
-            \"python"     :  s:glucky . "site:docs.python.org",
-            \"ruby"       :  s:glucky . "site:ruby-doc.org",
-            \"sh"         :  s:glucky . "site:www.gnu.org",
-            \"text"       :  s:ddg    . "!ahd",
-            \"thesaurus"  :  "http://www.thesaurus.com/browse/",
-            \"wiki"       :  s:ddg    . "!wikipedia",
-            \"stackexchange"  :  s:glucky    . "site:stackexchange.com",
+            \'ansible'    :  s:glucky . 'site:docs.ansible.com',
+            \'apache'     :  s:glucky . 'site:httpd.apache.org/docs',
+            \'c'          :  s:glucky . 'site:en.cppreference.com',
+            \'css'        :  s:glucky . 'site:cssdocs.org',
+            \'docker'     :  s:glucky . 'site:docs.docker.com',
+            \'fail2ban'   :  s:glucky . 'site:www.fail2ban.org',
+            \'go'         :  s:glucky . 'site:golang.org/doc',
+            \'haskell'    :  s:ddg    . '!hoogle',
+            \'html'       :  s:ddg    . '!mdn+html',
+            \'javascript' :  s:ddg    . '!mdn+javascript',
+            \'jquery'     :  s:glucky . 'site:api.jquery.com',
+            \'lua'        :  s:glucky . 'site:www.lua.org',
+            \'lighttpd'   :  s:glucky . 'site:redmine.lighttpd.net/projects/1/wiki/Docs',
+            \'mail'       :  s:ddg    . '!ahd',
+            \'make'       :  s:glucky . 'site:www.gnu.org',
+            \'mason'      :  s:glucky . 'site:www.masonbook.com',
+            \'muttrc'     :  s:glucky . 'site:www.mutt.org/doc/manual',
+            \'nginx'      :  s:glucky . 'site:nginx.org/en/docs/',
+            \'perl'       :  s:glucky . 'site:perldoc.perl.org',
+            \'pfmain'     :  s:glucky . 'site:www.postfix.org',
+            \'php'        :  s:ddg    . '!phpnet',
+            \'python'     :  s:glucky . 'site:docs.python.org',
+            \'ruby'       :  s:glucky . 'site:ruby-doc.org',
+            \'sh'         :  s:glucky . 'site:www.gnu.org',
+            \'text'       :  s:ddg    . '!ahd',
+            \'thesaurus'  :  'http://www.thesaurus.com/browse/',
+            \'wiki'       :  s:ddg    . '!wikipedia',
+            \'stackexchange'  :  s:glucky    . 'site:stackexchange.com',
             \}
 
 function! KeeperURLRegisterGoogle(filetype, site)
-    let s:URL_mappings[a:filetype]  =  s:glucky . "site:" . a:site
+    let s:URL_mappings[a:filetype]  =  s:glucky . 'site:' . a:site
 endfunction
 
 function! KeeperURLRegisterDDG(filetype, bang)
-    let s:URL_mappings[a:filetype]  =  s:ddg . "!" . a:bang
+    let s:URL_mappings[a:filetype]  =  s:ddg . '!' . a:bang
 endfunction
 
 function! s:geturl(context, search_term)
     " convention for straight URL
-    if a:context ==# "url"
+    if a:context ==# 'url'
         return a:search_term
     endif
     let l:context = a:context
-    if l:context =~ '[.]'
+    if l:context =~# '[.]'
         for c in split(l:context, '[.]')
             if has_key( s:URL_mappings, c )
                 let l:context = c
@@ -461,9 +460,9 @@ function! s:format_external_help( ... )
     if a:0 > 1
         let l:keyword = a:2
     else
-        let l:keyword = expand("<cword>")
+        let l:keyword = expand('<cword>')
     endif
-    call <SID>load_help(command . " " . l:keyword , l:keyword, context)
+    call <SID>load_help(command . ' ' . l:keyword , l:keyword, context)
 endfunction
 command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
