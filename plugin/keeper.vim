@@ -20,7 +20,7 @@ function! s:inline_help(...)
     if  a:0
         let keyword = substitute( a:1, ' ', '+', 'g' )
     else
-        let keyword = <SID>get_searchword()  " expand('<cword>')
+        let keyword = s:get_searchword()  " expand('<cword>')
     endif
 
     let context = 'wiki'
@@ -36,27 +36,27 @@ function! s:inline_help(...)
     elseif a:0 > 1
         let context = a:2
     else
-        let context = <SID>get_cword_context()
+        let context = s:get_cword_context()
     endif
 
-    let url = <SID>extract_url(getline('.'))
+    let url = s:extract_url(getline('.'))
     if url !=# ''
         let context = 'url'
     endif
-    let help_program = <SID>get_webman_syscall( context, keyword )
+    let help_program = s:get_webman_syscall( context, keyword )
 
-    call <SID>load_help(help_program, keyword, context)
+    call s:load_help(help_program, keyword, context)
 endfunction
 
 function! s:get_searchword()
     let cline = getline('.')
-    let url = <SID>extract_url(cline)
+    let url = s:extract_url(cline)
     if url !=# ''
         return url
     endif
     let selected = ''
     if visualmode() ==# 'v'
-        let selected = <SID>get_visual()
+        let selected = s:get_visual()
         let selected = substitute( selected, ' ', '+', 'g')
         return selected
     endif
@@ -114,9 +114,13 @@ function s:load_help( help_program, search_term, context )
 
     " retry with web if local program errors
     if v:shell_error != 0 && a:help_program !~# 'http'
-        call <SID>inline_help(a:search_term )
+        call s:inline_help(a:search_term )
         return
     endif
+    call Render_help( a:help_program, a:search_term, a:context, external_help )
+endfunction
+
+function Render_help( help_program, search_term, context, results )
 
     " open split with reasonable height
     let helpbufname = '__HELP__'
@@ -134,7 +138,7 @@ function s:load_help( help_program, search_term, context )
     " set up clean buffer
     normal! ggdG
     if !  exists( 'b:parent_filetype' )
-        let b:parent_filetype = parent_filetype
+        let b:parent_filetype = a:context
     endif
 
     " Track previous searches for back
@@ -152,10 +156,10 @@ function s:load_help( help_program, search_term, context )
     let simple_search_term = substitute( a:search_term, '+.*', '', '' )
     call append(0, 'Search results from ' . a:help_program )
     call append(0, '------------------------------------------')
-    call append(0, split(external_help, '\v\n'))
-    let browser = <SID>get_browser()
+    call append(0, split(a:results, '\v\n'))
+    let browser = s:get_browser()
     if browser ==# 'curl' || browser ==# 'wget'
-        call <SID>strip_raw_html()
+        call s:strip_raw_html()
     endif
     call s:cleanup_by_context(a:context)
     call s:generic_cleanup()
@@ -195,7 +199,7 @@ function s:search_seek(offset)
     else
         let b:search_stack_pointer = b:search_stack_pointer + a:offset
         let stacked_searchword = b:search_stack[b:search_stack_pointer]
-        call <SID>inline_help( stacked_searchword )
+        call s:inline_help( stacked_searchword )
     endif
 endfunction
 
@@ -204,19 +208,19 @@ nnoremap <silent> <Plug>SearchNext :call <SID>search_seek()<cr>
 
 function! s:wikipedia(...)
     let search_term = join( a:000, '+' )
-    call <SID>inline_help( search_term, 'wiki')
+    call s:inline_help( search_term, 'wiki')
 endfunction
 
 function! s:search_multiwords(...)
     let search_term = join( a:000, '+' )
     if len(search_term) == 0
-        let search_term = <SID>get_visual_selection()
+        let search_term = s:get_visual_selection()
     endif
     if len(search_term) == 0
         let cword = expand('<cword>')
-        call <SID>inline_help( cword )
+        call s:inline_help( cword )
     else
-        call <SID>inline_help( search_term )
+        call s:inline_help( search_term )
     endif
 endfunction
 
@@ -242,7 +246,7 @@ function! s:get_visual_selection()
 endfunction
 
 function! s:thesaurus(search_term)
-    call <SID>inline_help( a:search_term, 'thesaurus')
+    call s:inline_help( a:search_term, 'thesaurus')
 endfunction
 
 function! s:stackexchange(search_term)
@@ -250,7 +254,7 @@ function! s:stackexchange(search_term)
     if exists( 'b:parent_filetype' )
         let search_filetype = b:parent_filetype
     endif
-    call <SID>inline_help(a:search_term . '+' . search_filetype , 'stackexchange', search_filetype )
+    call s:inline_help(a:search_term . '+' . search_filetype , 'stackexchange', search_filetype )
 endfunction
 
 let s:browser = ""
@@ -285,7 +289,7 @@ function! s:get_browser_syscall()
                 \}
 
 
-    let browser = <SID>get_browser()
+    let browser = s:get_browser()
     return  browser . '  ' . browser_list[browser]
 endfunction
 
@@ -354,9 +358,9 @@ function! s:geturl(context, search_term)
 endfunction
 
 function! s:get_webman_syscall( context, search_term )
-    let browser = <SID>get_browser()
-    let browser_call = <SID>get_browser_syscall()
-    let url = <SID>geturl(a:context, a:search_term)
+    let browser = s:get_browser()
+    let browser_call = s:get_browser_syscall()
+    let url = s:geturl(a:context, a:search_term)
     let prg =  browser_call .  " '" . url . "'"
     return prg
 endfunction
@@ -401,10 +405,10 @@ function! s:delete_blanks()
 endfunction
 
 function s:strip_raw_html()
-    call <SID>crude_lexer()
-    call <SID>strip_scripts()
-    call <SID>delete_tags()
-    call <SID>delete_blanks()
+    call s:crude_lexer()
+    call s:strip_scripts()
+    call s:delete_tags()
+    call s:delete_blanks()
 endfunction
 
 function s:suggest_words(A,C,P)
@@ -462,7 +466,7 @@ function! s:format_external_help( ... )
     else
         let l:keyword = expand('<cword>')
     endif
-    call <SID>load_help(command . ' ' . l:keyword , l:keyword, context)
+    call s:load_help(command . ' ' . l:keyword , l:keyword, context)
 endfunction
 command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
