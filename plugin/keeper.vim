@@ -120,7 +120,7 @@ function s:load_help( help_program, search_term, context )
     call Render_help( a:help_program, a:search_term, a:context, external_help )
 endfunction
 
-function Render_help( help_program, search_term, context, results )
+function! Render_help( help_program, search_term, context, results )
 
     " open split with reasonable height
     let helpbufname = '__HELP__'
