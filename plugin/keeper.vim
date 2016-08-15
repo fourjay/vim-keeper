@@ -100,14 +100,18 @@ function! s:get_cword_context()
 
 endfunction
 
+let s:browser_line_count = 0
 function! s:cb_out(jobid, msg)
-    " body
+    let s:browser_line_count += 1
+    if s:browser_line_count == 50
+        echohl StatusLine | echom  "found results" | echohl None
+        call s:display_help_window()
+    endif
     " echom "got OutHandler " . a:msg
-    " let channel = job_getchannel(a:jobid)
-    " echom job_status(channel)
 endfunction
 function! s:exit_handler(jobid, status)
-    " echom 'finished loading'
+    echohl StatusLine | echom 'finished loading' | echohl None
+    let s:browser_line_count = 0
     call s:cleanup_webpage()
 endfunction
 
@@ -120,12 +124,12 @@ function s:load_help( help_program, search_term, context )
     " let external_help = system(  a:help_program . " " . a:search_term )
     " echom "help_program is " . a:help_program
     if exists('*job_start')
-        echom "running [" . a:help_program . "]"
+        echohl StatusLine | echom "running [" . a:help_program . "]" | echohl None
         " split s:helpbufname
         " call s:create_help(a:context)
         call s:reset_window()
         " sleep 1
-        let job = substitute(a:help_program, "'", '', 'g')
+        let job = substitute(a:help_program, "['\"]", '', 'g')
         let job_array = split( job, ' ' )
         " echo job_array
         " return
@@ -167,8 +171,7 @@ function! s:reset_window()
     endif
 endfunction
 
-function! s:cleanup_webpage()
-    echom 'showing results'
+function! s:display_help_window()
     let large_height = &lines * 2 / 3
     let winnr = bufwinnr(s:helpbufname)
     if winnr < 1
@@ -176,13 +179,22 @@ function! s:cleanup_webpage()
     else
         execute winnr . 'wincmd w'
     endif
+endfunction
+
+function s:clean_filetype( filetype )
+    return substitute( a:filetype, '\..*', '', '')
+endfunction
+
+function! s:cleanup_webpage()
+    echom 'showing results'
+    call s:display_help_window()
     set modifiable
     set noreadonly
     let browser = s:get_browser()
     if browser ==# 'curl' || browser ==# 'wget'
         call s:strip_raw_html()
     endif
-    call s:cleanup_by_context(b:parent_filetype)
+    call s:cleanup_by_context(s:clean_filetype( b:parent_filetype ) )
     call s:generic_cleanup()
 
     call append(0, '||              Ctrl-]:new search Ctrl-T:back')
@@ -190,18 +202,18 @@ function! s:cleanup_webpage()
 
     " execute 'setlocal filetype=' . b:parent_filetype . '.webhelp'
     call matchadd( 'Delimiter', b:search_term )
-    execute ':setlocal filetype=webhelp.' . b:parent_filetype
+    execute ':setlocal filetype=' . b:parent_filetype . '.webhelp'
     " set filetype=webhelp
 
     normal! 3G
     " call search( simple_search_term, 'w')
     normal! zt
     let @/ = b:search_term
-    " if b:parent_filetype != 'url'
-    "     " let @/ = a:search_term
-    " else
+    if b:parent_filetype != 'url'
+        let @/ = b:search_term
+    else
         normal! gg
-    " endif
+    endif
     call search(b:search_term, '')
     setlocal nomodifiable
     setlocal readonly
@@ -220,9 +232,9 @@ function! s:create_help(context)
     set modifiable
     set noreadonly
     normal! ggdG
-    if !  exists( 'b:parent_filetype' )
-        let b:parent_filetype = a:context
-    endif
+    " if !  exists( 'b:parent_filetype' )
+    "     let b:parent_filetype = a:context
+    " endif
 endfunction
 
 function! Render_help( help_program, search_term, context, results )
