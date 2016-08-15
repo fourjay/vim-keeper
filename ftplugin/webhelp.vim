@@ -1,7 +1,6 @@
 " Act like less
 nnoremap <buffer> <nowait>  d <C-d>
-nnoremap <buffer> <Space> <C-d>
-nnoremap <buffer> <Space><Space> <C-d>
+nnoremap <buffer> <nowait> <Space> <C-d>
 nnoremap <buffer> u <C-u>
 nnoremap <buffer> <silent> <nowait> q :bdelete<Cr>
 nnoremap [[ :call search( '^[A-Z]', "bW", "")<cr>z<cr>
