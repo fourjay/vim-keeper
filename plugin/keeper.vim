@@ -202,8 +202,9 @@ function! s:cleanup_webpage()
 
     " execute 'setlocal filetype=' . b:parent_filetype . '.webhelp'
     call matchadd( 'Delimiter', b:search_term )
-    execute ':setlocal filetype=' . b:parent_filetype . '.webhelp'
-    " set filetype=webhelp
+    if &filetype !=# b:parent_filetype
+        execute ':setlocal filetype=' . b:parent_filetype . '.webhelp'
+    endif
 
     normal! 3G
     " call search( simple_search_term, 'w')
