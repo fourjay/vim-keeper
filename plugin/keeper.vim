@@ -139,6 +139,7 @@ function s:load_help( help_program, search_term, context )
                     \   'out_io'              :  'buffer',
                     \   'out_name'            :  s:helpbufname,
                     \   'callback'            :  function('s:cb_out'),
+                    \   'out_timeout'             :  50,
                     \   'exit_cb'             :  function('s:exit_handler')
                     \ })
         call setbufvar( s:helpbufname, 'parent_filetype', a:context )
@@ -186,7 +187,7 @@ function s:clean_filetype( filetype )
 endfunction
 
 function! s:cleanup_webpage()
-    echom 'showing results'
+    echohl StatusLine | echom 'showing results' | echohl None
     call s:display_help_window()
     set modifiable
     set noreadonly
@@ -400,7 +401,7 @@ function! s:get_browser_syscall()
                 \ 'lynx'   : '-dump -nonumbers ',
                 \ 'links'  : '-dump',
                 \ 'elinks' : '--no-references -dump --no-numbering',
-                \ 'w3m'    : '-dump',
+                \ 'w3m'    : '-no-graph -4 -dump',
                 \ 'curl'   : '-q -A "Lynx" -L -s',
                 \ 'wget'   : '-qO- -U "Lynx"',
                 \}
