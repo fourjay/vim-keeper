@@ -105,8 +105,8 @@ let s:timer = ''
 function! s:out_cb(jobid, msg)
     let s:browser_line_count += 1
     if s:browser_line_count == 10
-        echohl StatusLine | echom  "found results" | echohl None
-        let s:timer = timer_start( 60, 
+        echohl StatusLine | echom  'found results' | echohl None
+        let s:timer = timer_start( 100, 
                     \ function( 's:timer_cleanup_webpage' ),
                     \ {'repeat' : 1 } )
         " call s:display_help_window()
@@ -132,7 +132,7 @@ function s:load_help( help_program, search_term, context )
     " let external_help = system(  a:help_program . " " . a:search_term )
     " echom "help_program is " . a:help_program
     if exists('*job_start')
-        echohl StatusLine | echom "running [" . a:help_program . "]" | echohl None
+        echohl StatusLine | echom "running [" . a:help_program . ']' | echohl None
         " split s:helpbufname
         " call s:create_help(a:context)
         call s:reset_window()
@@ -144,11 +144,12 @@ function s:load_help( help_program, search_term, context )
         let job = job_start(
                     \ job_array,
                     \ {
-                    \   'out_io'              :  'buffer',
-                    \   'out_name'            :  s:helpbufname,
-                    \   'out_cb'            :  function('s:out_cb'),
-                    \   'out_timeout'             :  50,
-                    \   'exit_cb'             :  function('s:exit_handler')
+                    \   'out_io'         :  'buffer',
+                    \   'out_name'       :  s:helpbufname,
+                    \   'out_cb'         :  function('s:out_cb'),
+                    \   'out_timeout'    :  50,
+                    \   'out_modifiable' :  0,
+                    \   'exit_cb'        :  function('s:exit_handler')
                     \ })
         call setbufvar( s:helpbufname, 'parent_filetype', a:context )
         call setbufvar( s:helpbufname, 'search_term', a:search_term )
@@ -209,8 +210,10 @@ function! s:cleanup_webpage()
     call s:cleanup_by_context(s:clean_filetype( b:parent_filetype ) )
     call s:generic_cleanup()
 
-    call append(0, '||              Ctrl-]:new search Ctrl-T:back')
-    " call append(0, 'SHORTCUT-KEYS u:up d:down n?:find next ' . simple_search_term . ' q:quit')
+    let simple_search_term = substitute( b:search_term, '+.*', '', '' )
+
+    call append(0, '|              Ctrl-]:new search Ctrl-T:back')
+    call append(0, '|  SHORTCUT-KEYS u:up d:down n?:find next ' . simple_search_term . ' q:quit')
 
     " execute 'setlocal filetype=' . b:parent_filetype . '.webhelp'
     call matchadd( 'Delimiter', b:search_term )
@@ -222,7 +225,7 @@ function! s:cleanup_webpage()
     " call search( simple_search_term, 'w')
     normal! zt
     let @/ = b:search_term
-    if b:parent_filetype != 'url'
+    if b:parent_filetype !=# 'url'
         let @/ = b:search_term
     else
         normal! gg
@@ -445,7 +448,7 @@ let s:URL_mappings = {
             \'nginx'      :  s:glucky . 'site:nginx.org/en/docs/',
             \'perl'       :  s:glucky . 'site:perldoc.perl.org',
             \'pfmain'     :  s:glucky . 'site:www.postfix.org',
-            \'php'        :  s:ddg    . '!phpnet',
+            \'php'        :  'http://php.net/manual-lookup.php?scope=quickref&pattern=',
             \'python'     :  s:glucky . 'site:docs.python.org',
             \'ruby'       :  s:glucky . 'site:ruby-doc.org',
             \'sh'         :  s:glucky . 'site:www.gnu.org',
@@ -498,12 +501,24 @@ function! s:cleanup_by_context(context)
     if a:context ==# 'php'
         silent! 1,/Report a Bug/ d
         silent! 1,/Focus search box/ d
+        call s:cleanup_apostrophes()
+    elseif a:context ==# 'perl'
+        silent! /^Download Perl/,/T • U • X$/ d
+        silent! /^Contact details/,$ d
+        silent! /^Please note: Many features of this site require JavaScript./,/Google Chrome/ d
+        call s:cleanup_apostrophes()
     elseif a:context ==# 'thesaurus'
         silent! 1,/^show \[all/ d
         silent! % s/ star$//
         silent! % s/^star$//
         silent! % s/star\>//
     endif
+endfunction
+
+function! s:cleanup_apostrophes()
+        silent! % s/\<'s\>/''s/
+        silent! % s/\<'re\>/''re/
+        silent! % s/'[.]*$//
 endfunction
 
 function! s:generic_cleanup()
