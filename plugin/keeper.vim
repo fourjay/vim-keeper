@@ -415,7 +415,7 @@ function! s:get_browser_syscall()
                 \ 'lynx'   : '-dump -nonumbers ',
                 \ 'links'  : '-dump',
                 \ 'elinks' : '--no-references -dump --no-numbering',
-                \ 'w3m'    : '-no-graph -4 -dump',
+                \ 'w3m'    : '-S -no-graph -4 -dump',
                 \ 'curl'   : '-q -A "Lynx" -L -s',
                 \ 'wget'   : '-qO- -U "Lynx"',
                 \}
