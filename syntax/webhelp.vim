@@ -15,7 +15,7 @@ highlight def link webHelpUrl Identifier
 syntax match webHelpMarkers    '\(^\s*[*+-] \)\@<=.*'
 highlight link webHelpMarkers String
 
-syntax match WebHelpHelp   '^[|][|].*'
+syntax match WebHelpHelp   '^[|]  .*'
 
 highlight link WebHelpHelp StatusLine
 
