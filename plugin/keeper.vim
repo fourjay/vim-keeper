@@ -101,17 +101,25 @@ function! s:get_cword_context()
 endfunction
 
 let s:browser_line_count = 0
-function! s:cb_out(jobid, msg)
+let s:timer = ''
+function! s:out_cb(jobid, msg)
     let s:browser_line_count += 1
-    if s:browser_line_count == 50
+    if s:browser_line_count == 10
         echohl StatusLine | echom  "found results" | echohl None
-        call s:display_help_window()
+        let s:timer = timer_start( 60, 
+                    \ function( 's:timer_cleanup_webpage' ),
+                    \ {'repeat' : 1 } )
+        " call s:display_help_window()
     endif
     " echom "got OutHandler " . a:msg
 endfunction
 function! s:exit_handler(jobid, status)
-    echohl StatusLine | echom 'finished loading' | echohl None
+    echohl StatusLine | echom 'closing channel' | echohl None
     let s:browser_line_count = 0
+    " call s:cleanup_webpage()
+endfunction
+
+function s:timer_cleanup_webpage(timer)
     call s:cleanup_webpage()
 endfunction
 
@@ -138,7 +146,7 @@ function s:load_help( help_program, search_term, context )
                     \ {
                     \   'out_io'              :  'buffer',
                     \   'out_name'            :  s:helpbufname,
-                    \   'callback'            :  function('s:cb_out'),
+                    \   'out_cb'            :  function('s:out_cb'),
                     \   'out_timeout'             :  50,
                     \   'exit_cb'             :  function('s:exit_handler')
                     \ })
@@ -179,6 +187,9 @@ function! s:display_help_window()
         silent execute large_height . 'split ' . s:helpbufname
     else
         execute winnr . 'wincmd w'
+    endif
+    if &filetype !=# b:parent_filetype
+        execute ':setlocal filetype=' . b:parent_filetype . '.webhelp'
     endif
 endfunction
 
