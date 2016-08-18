@@ -1,0 +1,4 @@
+Execute (setup):
+  source autoload/keeper/stack.vim
+  call keeper#stack#push("hello")
+  Assert keeper#stack#down() == 'hello'
