@@ -5,7 +5,10 @@
     },
     "README.md" : {
         "type"      : "readme",
-        "projectbase" : ""
+        "projectbase" : "./"
+    },
+    "plugin/*" : {
+        "type"      : "plugin"
     },
     "autoload/keeper/*.vim" : {
         "type"      : "autoload",
