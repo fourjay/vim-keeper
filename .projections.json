@@ -3,15 +3,13 @@
         "type"      : "test",
         "alternate" : "autoload/keeper/{}.vim"
     },
-    "README.md" : {
-        "type"      : "readme",
-        "projectbase" : "./"
-    },
-    "plugin/*" : {
-        "type"      : "plugin"
-    },
     "autoload/keeper/*.vim" : {
         "type"      : "autoload",
         "alternate" : "tests/{}.vader"
-    }
+    },
+    "README.md"  : {"type"      : "readme"},
+    "plugin/*"   : {"type"      : "plugin"},
+    "ftplugin/*" : {"type"      : "ftplugin"},
+    "syntax/*"   : {"type"      : "syntax"},
+    "doc/*.txt"  : {"type"      : "doc"},
 }
