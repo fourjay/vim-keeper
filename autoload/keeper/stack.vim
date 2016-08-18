@@ -1,9 +1,4 @@
 
-" let s:stack = {
-"             \ 'stack' : [ ],
-"             \ 'pointer' : -1
-"             \ }
-
 function! keeper#stack#push(url)
     call s:init_stack()
     call insert(b:stack.stack, a:url)
