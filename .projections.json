@@ -3,6 +3,10 @@
         "type"      : "test",
         "alternate" : "autoload/keeper/{}.vim"
     },
+    "README.md" : {
+        "type"      : "readme",
+        "projectbase" : ""
+    },
     "autoload/keeper/*.vim" : {
         "type"      : "autoload",
         "alternate" : "tests/{}.vader"
