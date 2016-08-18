@@ -1,7 +1,7 @@
 
 function! keeper#stack#push(url)
     call s:init_stack()
-    call insert(b:stack.stack, a:url)
+    call add(b:stack.stack, a:url)
     let b:stack.pointer += 1
 endfunction
 
@@ -10,11 +10,30 @@ function! keeper#stack#down()
     if s:is_empty()
         return ''
     endif
-    if b:stack.pointer >= 0
+    if b:stack.pointer > 0
         let b:stack.pointer -= 1
     endif
     let url = b:stack.stack[ b:stack.pointer ]
     return url
+endfunction
+
+function! keeper#stack#up()
+    call s:init_stack()
+    if s:is_empty()
+        return ''
+    endif
+    if b:stack.pointer < len(b:stack.stack) - 1
+        if b:stack.pointer >= 0
+            let b:stack.pointer += 1
+        endif
+    endif
+    let url = b:stack.stack[ b:stack.pointer ]
+    return url
+endfunction
+
+function! keeper#stack#clear()
+    unlet b:stack
+    call s:init_stack()
 endfunction
 
 function! s:is_empty()
