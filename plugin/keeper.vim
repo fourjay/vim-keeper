@@ -336,8 +336,8 @@ function s:search_seek(offset)
     endif
 endfunction
 
-nnoremap <silent> <Plug>SearchPrevious :call <SID>search_seek(-1)<cr>
-nnoremap <silent> <Plug>SearchNext :call <SID>search_seek()<cr>
+nmap <silent> <Plug>SearchPrevious :call <SID>search_seek(-1)<cr>
+nmap <silent> <Plug>SearchNext :call <SID>search_seek()<cr>
 
 function! s:wikipedia(...)
     let search_term = join( a:000, '+' )
@@ -416,7 +416,7 @@ function! s:get_browser_syscall()
                 \ 'lynx'   : '-dump -nonumbers ',
                 \ 'links'  : '-dump',
                 \ 'elinks' : '--no-references -dump --no-numbering',
-                \ 'w3m'    : '-S -no-graph -4 -dump',
+                \ 'w3m'    : '-no-graph -4 -dump',
                 \ 'curl'   : '-q -A "Lynx" -L -s',
                 \ 'wget'   : '-qO- -U "Lynx"',
                 \}
@@ -437,6 +437,7 @@ let s:URL_mappings = {
             \'fail2ban'   :  s:glucky . 'site:www.fail2ban.org',
             \'go'         :  s:glucky . 'site:golang.org/doc',
             \'haskell'    :  s:ddg    . '!hoogle',
+            \'gitconfig'  :  s:glucky . 'site:git-scm.com',
             \'html'       :  s:ddg    . '!mdn+html',
             \'javascript' :  s:ddg    . '!mdn+javascript',
             \'jquery'     :  s:glucky . 'site:api.jquery.com',
