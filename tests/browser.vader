@@ -1,14 +1,14 @@
 Execute (test browser):
   source autoload/keeper/browser.vim
   Assert keeper#browser#get() ==# 'w3m', 'finds w3m'
-  Assert keeper#browser#syscall() == 'w3m -no-graph -4 -dump', 'full syscall works'
+  Assert keeper#browser#command() == 'w3m -no-graph -4 -dump', 'full syscall works'
   " split
-  let split = keeper#browser#syscall_list()
-    Assert split[0] == 'w3m', 'w3m is first in syscall array'
-    Assert split[1] == '-no-graph', 'second parameter is reasonable'
+  let split = keeper#browser#command_list()
+  Assert split[0] == 'w3m', 'w3m is first in syscall array'
+  Assert split[1] == '-no-graph', 'second parameter is reasonable'
 
   " test manual assignment
   call keeper#browser#set('bogus', '-silly')
   Assert keeper#browser#get() ==# 'bogus', 'finds w3m'
-  Assert keeper#browser#syscall() == 'bogus -silly', 'manually set full syscall works'
+  Assert keeper#browser#command() == 'bogus -silly', 'manually set full syscall works'
 
