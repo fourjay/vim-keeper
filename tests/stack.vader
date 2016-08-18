@@ -1,4 +1,8 @@
 Execute (setup):
   source autoload/keeper/stack.vim
+  Assert keeper#stack#down() == ''
   call keeper#stack#push("hello")
-  Assert keeper#stack#down() == 'hello'
+  call keeper#stack#push("goodbye")
+  Assert keeper#stack#down() == 'goodbye', 'down gets stack top'
+  AssertEqual keeper#stack#down(), 'hello', 'repeat down gets next item'
+  AssertEqual keeper#stack#down(), 'hello', 'bottom of stack repeats'

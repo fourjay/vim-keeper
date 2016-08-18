@@ -5,16 +5,17 @@ let s:stack = {
             \ }
 
 function! keeper#stack#push(url)
-    call add(s:stack.stack, a:url)
+    call insert(s:stack.stack, a:url)
     let s:stack.pointer += 1
-    echo s:stack.stack[0]
 endfunction
 
 function! keeper#stack#down()
     if s:is_empty()
         return ''
     endif
-    let s:stack.pointer -= 1
+    if s:stack.pointer >= 0
+        let s:stack.pointer -= 1
+    endif
     let url = s:stack.stack[ s:stack.pointer ]
     return url
 endfunction
