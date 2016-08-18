@@ -1,0 +1,10 @@
+{
+    "tests/*.vader" : {
+        "type"      : "test",
+        "alternate" : "autoload/keeper/{}.vim"
+    },
+    "autoload/keeper/*.vim" : {
+        "type"      : "autoload",
+        "alternate" : "tests/{}.vader"
+    }
+}
