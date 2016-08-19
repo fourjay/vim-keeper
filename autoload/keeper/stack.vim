@@ -46,16 +46,28 @@ function! keeper#stack#is_bottom() abort
 endfunction
 
 function! keeper#stack#clear() abort
-    unlet b:stack
-    call s:init_stack()
+    if keeper#stack#exists()
+        unlet b:stack
+        call s:init_stack()
+    endif
 endfunction
 
-function! s:is_empty()
+function! keeper#stack#is_empty() abort
+    if ! keeper#stack#exists()
+        return 1
+    endif
     if len( b:stack.stack) == 0
         return 1
     else
         return 0
     endif
+endfunction
+
+function! keeper#stack#exists() abort
+    if ! exists('b:stack')
+        return 0
+    endif
+    return 1
 endfunction
 
 function! s:init_stack() abort
