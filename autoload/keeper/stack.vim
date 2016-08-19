@@ -31,6 +31,14 @@ function! keeper#stack#up()
     return url
 endfunction
 
+function! keeper#stack#is_top()
+    if b:stack.pointer == len(b:stack.stack) - 1
+        return 1
+    else
+        return 0
+    endif
+endfunction
+
 function! keeper#stack#clear()
     unlet b:stack
     call s:init_stack()

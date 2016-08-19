@@ -1,13 +1,22 @@
 Execute (setup):
   source autoload/keeper/stack.vim
+
   Assert keeper#stack#down() == ''
+
+  " fill stack
   call keeper#stack#push("one")
   call keeper#stack#push("two")
   call keeper#stack#push("three")
-  " Assert keeper#stack#down() == 'two', 'down gets stack top'
-  Assert keeper#stack#down() == 'two', 'repeat down gets next item'
-  AssertEqual keeper#stack#down(), 'one'
-  Assert keeper#stack#down() == 'one', 'bottom of stack repeats'
-  AssertEqual keeper#stack#up(),  'two'
 
-  AssertEqual keeper#stack#up() , 'three'
+  Assert keeper#stack#is_top() == 1   , 'correctly identifies top of stack'
+
+  Assert keeper#stack#down() == 'two' , 'repeat down gets next item'
+
+  Assert keeper#stack#is_top() == 0   , 'correctly sees stack below top'
+
+  AssertEqual keeper#stack#down()     , 'one'
+  Assert keeper#stack#down() == 'one' , 'bottom of stack repeats'
+  AssertEqual keeper#stack#up()       ,  'two'
+
+  AssertEqual keeper#stack#up()       , 'three'
+  Assert keeper#stack#up() == 'three' , 'repeat top does not advance'
