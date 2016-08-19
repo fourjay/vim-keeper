@@ -105,7 +105,7 @@ let s:timer = ''
 function! s:out_cb(jobid, msg)
     let s:browser_line_count += 1
     if s:browser_line_count == 10
-        echohl StatusLine | echom  'found results' | echohl None
+        call s:alert('found results')
         let s:timer = timer_start( 100, 
                     \ function( 's:timer_cleanup_webpage' ),
                     \ {'repeat' : 1 } )
@@ -114,9 +114,8 @@ function! s:out_cb(jobid, msg)
     " echom "got OutHandler " . a:msg
 endfunction
 function! s:exit_handler(jobid, status)
-    echohl StatusLine | echom 'closing channel' | echohl None
+    call s:alert('closing channel')
     let s:browser_line_count = 0
-    " call s:cleanup_webpage()
 endfunction
 
 function s:timer_cleanup_webpage(timer)
@@ -125,22 +124,11 @@ endfunction
 
 let s:context = ''
 function s:load_help( help_program, search_term, context )
-    " let s:context = a:context
-    " let parent_filetype = a:context
-    " echom "searching on " . a:search_term . "..."
-    " execute and load the output in a buffer
-    " let external_help = system(  a:help_program . " " . a:search_term )
-    " echom "help_program is " . a:help_program
     if exists('*job_start')
-        echohl StatusLine | echom "running [" . a:help_program . ']' | echohl None
-        " split s:helpbufname
-        " call s:create_help(a:context)
+        call s:alert("running [" . a:help_program . ']' )
         call s:reset_window()
-        " sleep 1
         let job = substitute(a:help_program, "['\"]", '', 'g')
         let job_array = split( job, ' ' )
-        " echo job_array
-        " return
         let job = job_start(
                     \ job_array,
                     \ {
@@ -158,7 +146,6 @@ function s:load_help( help_program, search_term, context )
     if exists(':VimProcBang')
         let external_help = vimproc#system( a:help_program )
     endif
-    " retry with web if local program errors
     if v:shell_error != 0 && a:help_program !~# 'http'
         call s:inline_help(a:search_term )
         return
@@ -199,7 +186,7 @@ function s:clean_filetype( filetype )
 endfunction
 
 function! s:cleanup_webpage()
-    echohl StatusLine | echom 'showing results' | echohl None
+    call s:alert('showing results')
     call s:display_help_window()
     set modifiable
     set noreadonly
@@ -441,6 +428,12 @@ function s:strip_raw_html()
     call s:strip_scripts()
     call s:delete_tags()
     call s:delete_blanks()
+endfunction
+
+function! s:alert(message)
+    echohl StatusLine
+    echom a:message
+    echohl None
 endfunction
 
 function s:suggest_words(A,C,P)
