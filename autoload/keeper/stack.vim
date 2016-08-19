@@ -7,7 +7,7 @@ endfunction
 
 function! keeper#stack#down() abort
     call s:init_stack()
-    if s:is_empty()
+    if keeper#stack#is_empty()
         return ''
     endif
     if b:stack.pointer > 0
