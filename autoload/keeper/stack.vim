@@ -17,6 +17,17 @@ function! keeper#stack#down() abort
     return a:keyword
 endfunction
 
+function! keeper#stack#is_match(keyword) abort
+    if keeper#stack#is_empty()
+        return 0
+    endif
+    let l:current_word = b:stack.stack[ b:stack.pointer ]
+    if l:current_word ==# a:keyword
+        return 1
+    endif
+    return 0
+endfunction
+
 function! keeper#stack#up() abort
     call s:init_stack()
     if keeper#stack#is_empty()
