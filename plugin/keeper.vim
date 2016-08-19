@@ -203,6 +203,7 @@ function! s:cleanup_webpage()
     call s:display_help_window()
     set modifiable
     set noreadonly
+    call keeper#stack#push( b:search_term )
     " let browser = s:get_browser()
     let browser = keeper#browser#get()
     if browser ==# 'curl' || browser ==# 'wget'
@@ -213,8 +214,6 @@ function! s:cleanup_webpage()
 
     let simple_search_term = substitute( b:search_term, '+.*', '', '' )
 
-    " call append(0, '|              Ctrl-]:new search Ctrl-T:back')
-    " call append(0, '|  SHORTCUT-KEYS u:up d:down n?:find next ' . simple_search_term . ' q:quit')
     call append(0, '|  RESULTS for: ' . simple_search_term . ' |   QUICKTIPS space to scroll, q to quit    ')
 
     " execute 'setlocal filetype=' . b:parent_filetype . '.webhelp'
@@ -275,15 +274,7 @@ function! Render_help( help_program, search_term, context, results )
         let b:parent_filetype = a:context
     endif
 
-    " Track previous searches for back
-    if ! exists( 'b:search_stack' )
-        let b:search_stack = [ a:search_term ]
-    elseif exists ('b:search_stack_pointer')
-        " don't add search term to stack
-        if b:search_stack[ b:search_stack_pointer ] !=# a:search_term
-            let  b:search_stack  = b:search_stack + [ a:search_term ] 
-        endif
-    endif
+    call keeper#stack#push( a:search_term )
 
     echom 'results of: ' . a:help_program . '...'
 
@@ -316,30 +307,16 @@ function! Render_help( help_program, search_term, context, results )
     endif
 endfunction
 
-function s:search_seek(offset)
-    let stack_size = 0
-    if ! exists('b:search_stack')
-        echo 'no previous searches'
+function! s:search_seek(direction)
+    if a:direction ==# 'down'
+        call s:inline_help( keeper#stack#down() )
     else
-        let stack_size = len(b:search_stack)
-    endif
-    if ! exists('b:search_stack_pointer')
-        let b:search_stack_pointer = stack_size - 1
-    endif
-    if b:search_stack_pointer > stack_size
-        echo 'at search stack end'
-    elseif b:search_stack_pointer < 0
-        let b:search_stack_pointer = 0
-        echo 'At beginning of search stack'
-    else
-        let b:search_stack_pointer = b:search_stack_pointer + a:offset
-        let stacked_searchword = b:search_stack[b:search_stack_pointer]
-        call s:inline_help( stacked_searchword )
+        call s:inline_help( keeper#stack#up() )
     endif
 endfunction
 
-nmap <silent> <Plug>SearchPrevious :call <SID>search_seek(-1)<cr>
-nmap <silent> <Plug>SearchNext :call <SID>search_seek()<cr>
+nmap <silent> <Plug>SearchPrevious :call <SID>search_seek('down')<cr>
+nmap <silent> <Plug>SearchNext :call <SID>search_seek('up')<cr>
 
 function! s:wikipedia(...)
     let search_term = join( a:000, '+' )
