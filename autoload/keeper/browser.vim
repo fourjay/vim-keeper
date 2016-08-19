@@ -107,7 +107,12 @@ function! keeper#browser#make_url(context, search_term) abort
     else
         let url = s:URL_mappings[ l:context ]
     endif
-    let url .= '+' . a:search_term
+    let l:prefix = ''
+    if ( match( url, 'duckduckgo', '')  != -1 )
+                \ || ( match( url, 'sourceid=navclient', '') != -1 )
+        let l:prefix = '+'
+    endif
+    let url .= l:prefix . a:search_term
     return url
 endfunction
 
