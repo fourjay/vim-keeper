@@ -1,6 +1,10 @@
 Execute (setup):
   source autoload/keeper/stack.vim
 
+  Assert keeper#stack#exists() == 0, 'identifies empty stack'
+
+  Assert keeper#stack#is_empty() == 1, 'reports non existent stack as "empty"'
+
   Assert keeper#stack#down() == ''
 
   " fill stack
@@ -12,6 +16,8 @@ Execute (setup):
 
   Assert keeper#stack#down() == 'two' , 'repeat down gets next item'
 
+  AssertEqual keeper#stack#is_match('two'), 1
+
   Assert keeper#stack#is_top() == 0   , 'correctly sees stack below top'
 
   AssertEqual keeper#stack#down()     , 'one'
@@ -20,3 +26,7 @@ Execute (setup):
 
   AssertEqual keeper#stack#up()       , 'three'
   Assert keeper#stack#up() == 'three' , 'repeat top does not advance'
+
+  call keeper#stack#push("three")
+  call keeper#stack#push("three")
+  Assert keeper#stack#down() ==# 'two', 'repeat pushes do not duplicate'
