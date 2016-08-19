@@ -1,8 +1,10 @@
 
 function! keeper#stack#push(keyword) abort
     call s:init_stack()
-    call add(b:stack.stack, a:keyword)
-    let b:stack.pointer += 1
+    if ! keeper#stack#is_match(a:keyword)
+        call add(b:stack.stack, a:keyword)
+        let b:stack.pointer += 1
+    endif
 endfunction
 
 function! keeper#stack#down() abort
