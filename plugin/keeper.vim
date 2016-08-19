@@ -309,9 +309,17 @@ endfunction
 
 function! s:search_seek(direction)
     if a:direction ==# 'down'
-        call s:inline_help( keeper#stack#down() )
+        if keeper#stack#is_bottom()
+            echoerr "at first search"
+        else
+            call s:inline_help( keeper#stack#down() )
+        endif
     else
-        call s:inline_help( keeper#stack#up() )
+        if keeper#stack#is_top()
+            echoerr "at last search"
+        else
+            call s:inline_help( keeper#stack#up() )
+        endif
     endif
 endfunction
 
