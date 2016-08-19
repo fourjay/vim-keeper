@@ -12,3 +12,7 @@ Execute (test browser):
   Assert keeper#browser#get() ==# 'bogus', 'finds w3m'
   Assert keeper#browser#command() == 'bogus -silly', 'manually set full syscall works'
 
+  " keeper#browser#register_google(filetype, site)
+  let url = keeper#browser#make_url('php', 'require')
+  AssertEqual url, 'http://php.net/manual-lookup.php?scope=quickref&pattern=require'
+
