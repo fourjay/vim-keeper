@@ -43,8 +43,8 @@ function! s:inline_help(...)
     if url !=# ''
         let context = 'url'
     endif
-    let help_program = s:get_webman_syscall( context, keyword )
 
+    let help_program = keeper#browser#syscall( context, keyword )
     call s:load_help(help_program, keyword, context)
 endfunction
 
