@@ -19,14 +19,14 @@ let s:browser_list = {
             \}
 
 function! keeper#browser#get() abort
-    for browser in s:ordered_browsers
-        if len(s:browser) == 0
+    if len(s:browser) == 0
+        for browser in s:ordered_browsers
             if executable( browser )
                 let s:browser = browser
                 break
             endif
-        endif
-    endfor
+        endfor
+    endif
     return s:browser
 endfunction
 
