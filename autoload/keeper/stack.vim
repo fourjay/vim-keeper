@@ -1,11 +1,11 @@
 
-function! keeper#stack#push(url)
+function! keeper#stack#push(url) abort
     call s:init_stack()
     call add(b:stack.stack, a:url)
     let b:stack.pointer += 1
 endfunction
 
-function! keeper#stack#down()
+function! keeper#stack#down() abort
     call s:init_stack()
     if s:is_empty()
         return ''
@@ -17,7 +17,7 @@ function! keeper#stack#down()
     return url
 endfunction
 
-function! keeper#stack#up()
+function! keeper#stack#up() abort
     call s:init_stack()
     if s:is_empty()
         return ''
@@ -31,15 +31,21 @@ function! keeper#stack#up()
     return url
 endfunction
 
-function! keeper#stack#is_top()
+function! keeper#stack#is_top() abort
     if b:stack.pointer == len(b:stack.stack) - 1
         return 1
-    else
-        return 0
     endif
+    return 0
 endfunction
 
-function! keeper#stack#clear()
+function! keeper#stack#is_bottom() abort
+    if b:stack.pointer == 0
+        return 1
+    endif
+    return 0
+endfunction
+
+function! keeper#stack#clear() abort
     unlet b:stack
     call s:init_stack()
 endfunction
@@ -52,7 +58,7 @@ function! s:is_empty()
     endif
 endfunction
 
-function! s:init_stack()
+function! s:init_stack() abort
     if ! exists('b:stack')
         let b:stack = {
             \ 'stack' : [ ],
