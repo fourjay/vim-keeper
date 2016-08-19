@@ -1,7 +1,7 @@
 
-function! keeper#stack#push(url) abort
+function! keeper#stack#push(keyword) abort
     call s:init_stack()
-    call add(b:stack.stack, a:url)
+    call add(b:stack.stack, a:keyword)
     let b:stack.pointer += 1
 endfunction
 
@@ -13,8 +13,8 @@ function! keeper#stack#down() abort
     if b:stack.pointer > 0
         let b:stack.pointer -= 1
     endif
-    let url = b:stack.stack[ b:stack.pointer ]
-    return url
+    let a:keyword = b:stack.stack[ b:stack.pointer ]
+    return a:keyword
 endfunction
 
 function! keeper#stack#up() abort
@@ -27,8 +27,8 @@ function! keeper#stack#up() abort
             let b:stack.pointer += 1
         endif
     endif
-    let url = b:stack.stack[ b:stack.pointer ]
-    return url
+    let a:keyword = b:stack.stack[ b:stack.pointer ]
+    return a:keyword
 endfunction
 
 function! keeper#stack#is_top() abort
