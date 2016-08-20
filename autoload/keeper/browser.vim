@@ -80,6 +80,10 @@ let s:URL_mappings = {
             \'stackexchange'  :  s:glucky    . 'site:stackexchange.com',
             \}
 
+function! keeper#browser#filetypes()
+    return sort(keys(s:URL_mappings))
+endfunction
+
 function! keeper#browser#register_google(filetype, site) abort
     let s:URL_mappings[a:filetype]  =  s:glucky . 'site:' . a:site
 endfunction
