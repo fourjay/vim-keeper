@@ -7,6 +7,9 @@ highlight link WebHelpSection FoldColumn
 
 syntax match manOptionDesc     '\v[a-z0-9]+\(.*\)'
 
+syntax match WebHelpBody '\v(\w+\s+){10,}'
+highlight link WebHelpBody None
+
 syntax match webHelpUrl        '\vhttp[s]*:\/\/\S*'
 syntax match webHelpUrl        '\v[a-zA-Z0-9._]+\.(com|net|edu|org)'
 
