@@ -67,7 +67,7 @@ let s:URL_mappings = {
             \'make'       :  s:glucky . 'site:www.gnu.org',
             \'mason'      :  s:glucky . 'site:www.masonbook.com',
             \'muttrc'     :  s:glucky . 'site:www.mutt.org/doc/manual',
-            \'nagios'     :  s:glucky . 'site:assets.nagios.org',
+            \'nagios'     :  'https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/objectdefinitions.html#',
             \'nginx'      :  s:glucky . 'site:nginx.org/en/docs/',
             \'perl'       :  s:glucky . 'site:perldoc.perl.org',
             \'pfmain'     :  s:glucky . 'site:www.postfix.org',
