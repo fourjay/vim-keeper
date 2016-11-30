@@ -2,7 +2,7 @@
 nnoremap <buffer> <nowait>  d <C-d>
 nnoremap <buffer> <nowait> <Space> <C-d>
 nnoremap <buffer> u <C-u>
-nnoremap <buffer> <silent> <nowait> q :bdelete<Cr>
+nnoremap <buffer> <silent> <nowait> q :bwipe<Cr>
 nnoremap [[ :call search( '^[A-Z]', "bW", "")<cr>z<cr>
 nnoremap ]] :call search( '^[A-Z]', "W", "")<cr>z<cr>
 
