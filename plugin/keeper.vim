@@ -14,61 +14,61 @@ function! s:inline_help(...)
         return
     endif
 
-    let keyword = ''
-    " if we've passed in a keyword, we want a random search
+    let l:keyword = ''
+    " if we've passed in a l:keyword, we want a random search
     " Else look at the current word (AKA "like K")
     if  a:0
-        let keyword = substitute( a:1, ' ', '+', 'g' )
+        let l:keyword = substitute( a:1, ' ', '+', 'g' )
     else
-        let keyword = s:get_searchword()  " expand('<cword>')
+        let l:keyword = s:get_searchword()  " expand('<cword>')
     endif
 
-    let context = 'wiki'
+    let l:context = 'wiki'
     if a:0 == 2
-        let context = a:2
+        let l:context = a:2
     elseif &filetype ==# 'webhelp'
         " allow recursive lookup in the help output
-        let context=b:parent_filetype
+        let l:context=b:parent_filetype
     " If we don't have a better option
     elseif &filetype ==# ''
-        let context = 'wiki'
-    " Allow corcing context
+        let l:context = 'wiki'
+    " Allow corcing l:context
     elseif a:0 > 1
-        let context = a:2
+        let l:context = a:2
     else
-        let context = s:get_cword_context()
+        let l:context = s:get_cword_context()
     endif
 
-    let url = s:extract_url(getline('.'))
-    if url !=# ''
-        let context = 'url'
+    let l:url = s:extract_url(getline('.'))
+    if l:url !=# ''
+        let l:context = 'url'
     endif
 
-    let help_program = keeper#browser#syscall( context, keyword )
-    call s:load_help(help_program, keyword, context)
+    let l:help_program = keeper#browser#syscall( l:context, l::keyword )
+    call s:load_help(l:help_program, l:keyword, l:context)
 endfunction
 
 function! s:get_searchword()
-    let cline = getline('.')
-    let url = s:extract_url(cline)
-    if url !=# ''
-        return url
+    let l:cline = getline('.')
+    let l:url = s:extract_url(l:cline)
+    if l:url !=# ''
+        return l:url
     endif
-    let selected = ''
+    let l:selected = ''
     if visualmode() ==# 'v'
-        let selected = s:get_visual()
-        let selected = substitute( selected, ' ', '+', 'g')
-        return selected
+        let l:selected = s:get_visual()
+        let l:selected = substitute( l:selected, ' ', '+', 'g')
+        return l:selected
     endif
     return expand("\<cword>")
 endfunction
 
 function! s:get_visual()
-    let saved_s_register = @s
+    let l:saved_s_register = @s
     normal! gv"sy
-    let selected = @s
-    let @s = saved_s_register
-    return selected
+    let l:selected = @s
+    let @s = l:saved_s_register
+    return l:selected
 endfunction
 
 function! s:extract_url(cline)
@@ -461,37 +461,37 @@ function! s:suggest_manprograms(...)
     if a:2 =~ '\v^Xhelp \w+ '
         return expand("<cword>") . "\n"
     endif
-    let list = ""
-    let ft_match = get( s:man_programs, &filetype )
+    let l:list = ""
+    let l:ft_match = get( s:man_programs, &filetype )
     if &keywordprg != ""
-        let ft_match = &keywordprg
+        let l:ft_match = &keywordprg
     endif
-    if ft_match != ''
-        if executable( ft_match )
-            let list .= ft_match . "\n"
+    if l:ft_match != ''
+        if executable( l:ft_match )
+            let l:list .= l:ft_match . "\n"
         endif
     endif
     for ft_candidate in keys(s:man_programs)
         let candidate = s:man_programs[ ft_candidate ]
         if executable( candidate )
-            if ft_match != candidate
-                let list .= candidate . "\n"
+            if l:ft_match != candidate
+                let l:list .= candidate . "\n"
             endif
         endif
     endfor
-    return list
+    return l:list
 endfunction
 
 " expose raw loadhelp
 function! s:format_external_help( ... )
-    let context = &filetype
+    let l:context = &filetype
     let command = a:1
     if a:0 > 1
         let l:keyword = a:2
     else
         let l:keyword = expand('<cword>')
     endif
-    call s:load_help(command . ' ' . l:keyword , l:keyword, context)
+    call s:load_help(command . ' ' . l:keyword , l:keyword, l:context)
 endfunction
 command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
