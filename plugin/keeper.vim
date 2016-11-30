@@ -44,7 +44,7 @@ function! s:inline_help(...)
         let l:context = 'url'
     endif
 
-    let l:help_program = keeper#browser#syscall( l:context, l::keyword )
+    let l:help_program = keeper#browser#syscall( l:context, l:keyword )
     call s:load_help(l:help_program, l:keyword, l:context)
 endfunction
 
@@ -73,25 +73,25 @@ endfunction
 
 function! s:extract_url(cline)
     " yes, this is incomplete, but in practice...
-    let TLDs = [ 'com', 'net', 'org' ]
+    let l:TLDs = [ 'com', 'net', 'org' ]
     " matchstr (at least in my environment) doesn't uork with match alternate
-    for tld in TLDs
-        let link_pattern = '[^ ][^ ]*[.]' . tld . '[:\/][/]*[^ ][^ ]*' 
-        " echom "link_pattern is " . link_pattern
-        let url = matchstr( a:cline, link_pattern)
-        " echom "with tld " . tld . "url is " . url
-        if url !=# ''
-            return url
+    for tld in l:TLDs
+        let l:link_pattern = '[^ ][^ ]*[.]' . l:tld . '[:\/][/]*[^ ][^ ]*' 
+        " echom "l:link_pattern is " . l:link_pattern
+        let url = matchstr( a:cline, l:link_pattern)
+        " echom "with l:tld " . l:tld . "url is " . url
+        if l:url !=# ''
+            return l:url
         endif
     endfor
     return ''
 endfunction
 
 function! s:get_cword_context()
-    let keyword_syngrp = synIDattr(synID(line('.'), col('.'), 0), 'name')
-    if keyword_syngrp =~# 'SQL'
+    let l:keyword_syngrp = synIDattr(synID(line('.'), col('.'), 0), 'name')
+    if l:keyword_syngrp =~# 'SQL'
         return 'sql'
-    elseif keyword_syngrp =~? 'javascript'
+    elseif l:keyword_syngrp =~? 'javascript'
         return 'javascript'
     endif
     if &filetype !=# ''
@@ -125,12 +125,12 @@ endfunction
 let s:context = ''
 function s:load_help( help_program, search_term, context )
     if exists('*job_start')
-        call s:alert("running [" . a:help_program . ']' )
+        call s:alert('running [' . a:help_program . ']' )
         call s:reset_window()
-        let job = substitute(a:help_program, "['\"]", '', 'g')
-        let job_array = split( job, ' ' )
-        let job = job_start(
-                    \ job_array,
+        let l:job = substitute(a:help_program, "['\"]", '', 'g')
+        let l:job_array = split( l:job, ' ' )
+        let l:job = job_start(
+                    \ l:job_array,
                     \ {
                     \   'out_io'         :  'buffer',
                     \   'out_name'       :  s:helpbufname,
@@ -144,13 +144,13 @@ function s:load_help( help_program, search_term, context )
         return
     endif
     if exists(':VimProcBang')
-        let external_help = vimproc#system( a:help_program )
+        let l:external_help = vimproc#system( a:help_program )
     endif
     if v:shell_error != 0 && a:help_program !~# 'http'
         call s:inline_help(a:search_term )
         return
     endif
-    call Render_help( a:help_program, a:search_term, a:context, external_help )
+    call Render_help( a:help_program, a:search_term, a:context, l:external_help )
 endfunction
 
 function! s:reset_window()
