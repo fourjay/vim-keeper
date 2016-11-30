@@ -154,12 +154,12 @@ function s:load_help( help_program, search_term, context )
 endfunction
 
 function! s:reset_window()
-    let winnr = bufwinnr(s:helpbufname)
+    let l:winnr = bufwinnr(s:helpbufname)
     let current_buffer = bufwinnr('%')
-    if winnr < 1
+    if l:winnr < 1
         badd s:helpbufname
     else
-        execute winnr . 'wincmd w'
+        execute l:winnr . 'wincmd w'
         setlocal modifiable
         setlocal noreadonly
         silent normal! ggdG
@@ -169,12 +169,12 @@ function! s:reset_window()
 endfunction
 
 function! s:display_help_window()
-    let large_height = &lines * 2 / 3
-    let winnr = bufwinnr(s:helpbufname)
-    if winnr < 1
-        silent execute large_height . 'split ' . s:helpbufname
+    let l:large_height = &lines * 2 / 3
+    let l:winnr = bufwinnr(s:helpbufname)
+    if l:winnr < 1
+        silent execute l:large_height . 'split ' . s:helpbufname
     else
-        execute winnr . 'wincmd w'
+        execute l:winnr . 'wincmd w'
     endif
     if &filetype !=# b:parent_filetype
         execute ':setlocal filetype=' . b:parent_filetype . '.webhelp'
@@ -192,16 +192,16 @@ function! s:cleanup_webpage()
     set noreadonly
     call keeper#stack#push( b:search_term )
     " let browser = s:get_browser()
-    let browser = keeper#browser#get()
-    if browser ==# 'curl' || browser ==# 'wget'
+    let l:browser = keeper#browser#get()
+    if l:browser ==# 'curl' || l:browser ==# 'wget'
         call s:strip_raw_html()
     endif
     call s:cleanup_by_context(s:clean_filetype( b:parent_filetype ) )
     call s:generic_cleanup()
 
-    let simple_search_term = substitute( b:search_term, '+.*', '', '' )
+    let l:simple_search_term = substitute( b:search_term, '+.*', '', '' )
 
-    call append(0, '|  RESULTS for: ' . simple_search_term . ' |   QUICKTIPS space to scroll, q to quit    ')
+    call append(0, '|  RESULTS for: ' . l:simple_search_term . ' |   QUICKTIPS space to scroll, q to quit    ')
 
     " execute 'setlocal filetype=' . b:parent_filetype . '.webhelp'
     call matchadd( 'Delimiter', b:search_term )
@@ -226,12 +226,12 @@ endfunction
 
 let s:helpbufname = '__HELP__'
 function! s:create_help(context)
-    let large_height = &lines * 2 / 3
-    let winnr = bufwinnr(s:helpbufname)
-    if winnr < 1
-        silent execute large_height . 'split ' . s:helpbufname
+    let l:large_height = &lines * 2 / 3
+    let l:winnr = bufwinnr(s:helpbufname)
+    if l:winnr < 1
+        silent execute l:large_height . 'split ' . s:helpbufname
     else
-        execute winnr . 'wincmd w'
+        execute l:winnr . 'wincmd w'
     endif
     set modifiable
     set noreadonly
@@ -244,13 +244,13 @@ endfunction
 function! Render_help( help_program, search_term, context, results )
     " open split with reasonable height
     " let helpbufname = '__HELP__'
-    let large_height = &lines * 2 / 3
+    let l:large_height = &lines * 2 / 3
     " reuse buffer as available
-    let winnr = bufwinnr(s:helpbufname)
-    if winnr > 0
-        execute winnr . 'wincmd w'
+    let l:winnr = bufwinnr(s:helpbufname)
+    if l:winnr > 0
+        execute l:winnr . 'wincmd w'
     else
-        silent execute large_height . 'split ' . s:helpbufname
+        silent execute l:large_height . 'split ' . s:helpbufname
     endif
     " If we are re-using, then temporarily make writeable warning
     setlocal noreadonly
@@ -265,13 +265,13 @@ function! Render_help( help_program, search_term, context, results )
 
     echom 'results of: ' . a:help_program . '...'
 
-    let simple_search_term = substitute( a:search_term, '+.*', '', '' )
+    let l:simple_search_term = substitute( a:search_term, '+.*', '', '' )
     call append(0, 'Search results from ' . a:help_program )
     call append(0, '------------------------------------------')
     call append(0, split(a:results, '\v\n'))
     " let browser = s:get_browser()
-    let browser = keeper#browser#get()
-    if browser ==# 'curl' || browser ==# 'wget'
+    let l:browser = keeper#browser#get()
+    if l:browser ==# 'curl' || l:browser ==# 'wget'
         call s:strip_raw_html()
     endif
     call s:cleanup_by_context(a:context)
@@ -279,15 +279,15 @@ function! Render_help( help_program, search_term, context, results )
 
     call append(0, '=====================================================================')
     call append(0, '              Ctrl-]:new search Ctrl-T:back')
-    call append(0, 'SHORTCUT-KEYS u:up d:down n?:find next ' . simple_search_term . ' q:quit')
+    call append(0, 'SHORTCUT-KEYS u:up d:down n?:find next ' . l:simple_search_term . ' q:quit')
 
     execute 'setlocal filetype=' . b:parent_filetype . '.webhelp'
-    call matchadd( 'Delimiter', simple_search_term )
+    call matchadd( 'Delimiter', l:simple_search_term )
 
     normal! 3G
-    call search( simple_search_term, 'w')
+    call search( l:simple_search_term, 'w')
     normal! zt
-    if a:context != 'url'
+    if a:context !=# 'url'
         let @/ = a:search_term
     else
         normal! gg
@@ -297,13 +297,13 @@ endfunction
 function! s:search_seek(direction)
     if a:direction ==# 'down'
         if keeper#stack#is_bottom()
-            echoerr "at first search"
+            echoerr 'at first search'
         else
             call s:inline_help( keeper#stack#down() )
         endif
     else
         if keeper#stack#is_top()
-            echoerr "at last search"
+            echoerr 'at last search'
         else
             call s:inline_help( keeper#stack#up() )
         endif
@@ -314,42 +314,42 @@ nmap <silent> <Plug>SearchPrevious :call <SID>search_seek('down')<cr>
 nmap <silent> <Plug>SearchNext :call <SID>search_seek('up')<cr>
 
 function! s:wikipedia(...)
-    let search_term = join( a:000, '+' )
-    call s:inline_help( search_term, 'wiki')
+    let l:search_term = join( a:000, '+' )
+    call s:inline_help( l:search_term, 'wiki')
 endfunction
 
 function! s:search_multiwords(...)
-    let search_term = join( a:000, '+' )
-    if len(search_term) == 0
-        let search_term = s:get_visual_selection()
+    let l:search_term = join( a:000, '+' )
+    if len(l:search_term) == 0
+        let l:search_term = s:get_visual_selection()
     endif
-    if len(search_term) == 0
-        let cword = expand('<cword>')
-        call s:inline_help( cword )
+    if len(l:search_term) == 0
+        let l:cword = expand('<cword>')
+        call s:inline_help( l:cword )
     else
-        call s:inline_help( search_term )
+        call s:inline_help( l:search_term )
     endif
 endfunction
 
 function! s:get_visual_selection()
-    let saved_a = @a
-    let saved_pos = getcurpos()
+    let l:saved_a = @a
+    let l:saved_pos = getcurpos()
     " This moves cursor position
     normal! gv"ay
-    call setpos( '.', saved_pos )
-    let found = @a
-    let @a = saved_a
+    call setpos( '.', l:saved_pos )
+    let l:found = @a
+    let @a = l:saved_a
     " don't use a non-recent visual selection.
     if exists( 'b:_last_visual_search' )
-        if b:_last_visual_search =~ found
-            let found = ''
+        if b:_last_visual_search =~ l:found
+            let l:found = ''
         endif
     endif
-    if len(found) > 0
-        let b:_last_visual_search = found
+    if len(l:found) > 0
+        let b:_last_visual_search = l:found
     endif
-    let found = substitute(found, ' [ ]*', '+', '')
-    return found
+    let l:found = substitute(l:found, ' [ ]*', '+', '')
+    return l:found
 endfunction
 
 function! s:thesaurus(search_term)
@@ -357,11 +357,11 @@ function! s:thesaurus(search_term)
 endfunction
 
 function! s:stackexchange(search_term)
-    let search_filetype = &filetype
+    let l:search_filetype = &filetype
     if exists( 'b:parent_filetype' )
-        let search_filetype = b:parent_filetype
+        let l:search_filetype = b:parent_filetype
     endif
-    call s:inline_help(a:search_term . '+' . search_filetype , 'stackexchange', search_filetype )
+    call s:inline_help(a:search_term . '+' . l:search_filetype , 'stackexchange', l:search_filetype )
 endfunction
 
 function! KeeperURLRegisterGoogle(filetype, site)
@@ -451,10 +451,10 @@ command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>th
 command! -nargs=1 -complete=customlist,<SID>suggest_words Stackexchange call <SID>stackexchange(<f-args>)
 
 let s:man_programs = {
-            \   "sh"      : "man",
-            \   "perl"    : "perldoc",
-            \   "python"  : "pydoc",
-            \   "ansible" : "ansible-doc",
+            \   'sh'      : 'man',
+            \   'perl'    : 'perldoc',
+            \   'python'  : 'pydoc',
+            \   'ansible' : 'ansible-doc',
             \ }
 function! s:suggest_manprograms(...)
     " return the cword if there's alread a man program chosen
