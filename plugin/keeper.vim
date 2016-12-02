@@ -124,6 +124,20 @@ endfunction
 
 let s:context = ''
 function s:load_help( help_program, search_term, context )
+    if s:is_local_help( a:help_program )
+        " Try local help first
+        let l:local_help_results = system( a:help_program )
+        if v:shell_error == 0 " || l:local_help_results !=# ''
+            " if things look good then print
+            call Render_help( a:help_program, a:search_term, a:context, l:local_help_results )
+            return
+        else
+            " else recall with web
+            call s:inline_help(a:search_term )
+        return
+    endif
+
+    endif
     if exists('*job_start')
         call s:alert('running [' . a:help_program . ']' )
         call s:reset_window()
@@ -146,11 +160,11 @@ function s:load_help( help_program, search_term, context )
     if exists(':VimProcBang')
         let l:external_help = vimproc#system( a:help_program )
     endif
-    if v:shell_error != 0 && a:help_program !~# 'http'
-        call s:inline_help(a:search_term )
-        return
-    endif
     call Render_help( a:help_program, a:search_term, a:context, l:external_help )
+endfunction
+
+function! s:is_local_help(help_program)
+    return a:help_program !~# 'http'
 endfunction
 
 function! s:reset_window()
