@@ -499,13 +499,18 @@ endfunction
 " expose raw loadhelp
 function! s:format_external_help( ... )
     let l:context = &filetype
-    let command = a:1
+    let l:command = a:1
     if a:0 > 1
-        let l:keyword = a:2
+        if a:2 =~# '^-'
+            let l:command .= ' ' . a:2
+            let l:keyword = a:3
+        else
+            let l:keyword = a:2
+        endif
     else
         let l:keyword = expand('<cword>')
     endif
-    call s:load_help(command . ' ' . l:keyword , l:keyword, l:context)
+    call s:load_help(l:command . ' ' . l:keyword , l:keyword, l:context)
 endfunction
 command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
