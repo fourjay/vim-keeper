@@ -21,6 +21,7 @@ setlocal nobackup
 setlocal noshelltemp
 setlocal scrolloff=2
 setlocal nomodifiable
+setlocal nonumber
 
 " navigation
 nmap <buffer> <silent> <C-]>      <Plug>InlineHelp
