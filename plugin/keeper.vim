@@ -10,7 +10,7 @@ let s:base_path = expand('<sfile>:p:h')
 function! s:inline_help(...)
     " Account for the special case non-external keywordprg
     if &keywordprg ==# ':help' && &filetype ==# 'vim'
-        execute 'normal K'
+        execute 'normal! K'
         return
     endif
 
