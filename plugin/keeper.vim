@@ -398,43 +398,43 @@ function! s:cleanup_by_context(context)
         call s:cleanup_apostrophes()
     elseif a:context ==# 'thesaurus'
         silent! 1,/^show \[all/ d
-        silent! % s/ star$//
-        silent! % s/^star$//
-        silent! % s/star\>//
+        normal! silent! % s/ star$//
+        normal! silent! % s/^star$//
+        normal! silent! % s/star\>//
     endif
 endfunction
 
 function! s:cleanup_apostrophes()
-        silent! % s/\<'s\>/''s/
-        silent! % s/\<'re\>/''re/
-        silent! % s/'[.]*$//
+        normal! silent! % s/\<'s\>/''s/
+        normal! silent! % s/\<'re\>/''re/
+        normal! silent! % s/'[.]*$//
 endfunction
 
 function! s:generic_cleanup()
     " strip a single apostrophe in a line
     " This makes syntax highlighting more robust
-    silent! g/^[^']*'[^']*$/s/'//
+    normal! silent! g/^[^']*'[^']*$/s/'//
     " clean blamk div
-    silent! g/^\s*[*-+]\s*$/d
+    normal! silent! g/^\s*[*-+]\s*$/d
 endfunction
 
 
 " HTML stipping functions
 function! s:crude_lexer()
     " i.e. one tag per line
-    silent! % s/\(<[^>]*>\)/\r\1\r/g
+    normal! silent! % s/\(<[^>]*>\)/\r\1\r/g
 endfunction
 
 function! s:strip_scripts()
-    silent! g/<script.*>/-1;/<\/script>/+1d
+    normal! silent! g/<script.*>/-1;/<\/script>/+1d
 endfunction
 
 function! s:delete_tags()
-    silent! g/^<[^>]*>$/d
+    normal! silent! g/^<[^>]*>$/d
 endfunction
 
 function! s:delete_blanks()
-    silent! g/^[ ]*$/d
+    normal! silent! g/^[ ]*$/d
 endfunction
 
 function s:strip_raw_html()
