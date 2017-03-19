@@ -413,9 +413,9 @@ endfunction
 function! s:generic_cleanup()
     " strip a single apostrophe in a line
     " This makes syntax highlighting more robust
-    normal! silent! g/^[^']*'[^']*$/s/'//
+    normal! g/^[^']*'[^']*$/s/'//
     " clean blamk div
-    normal! silent! g/^\s*[*-+]\s*$/d
+    normal! g/^\s*[*-+]\s*$/d
 endfunction
 
 
