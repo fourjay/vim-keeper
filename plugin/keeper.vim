@@ -127,7 +127,7 @@ function s:load_help( help_program, search_term, context )
     if s:is_local_help( a:help_program )
         " Try local help first
         silent let l:local_help_results = system( '2>/dev/null ' . a:help_program )
-        if v:shell_error == 0 " || l:local_help_results !=# ''
+        if v:shell_error == 0 && ! empty(l:local_help_results)
             " if things look good then print
             call Render_help( a:help_program, a:search_term, a:context, l:local_help_results )
             return
@@ -413,9 +413,9 @@ endfunction
 function! s:generic_cleanup()
     " strip a single apostrophe in a line
     " This makes syntax highlighting more robust
-    normal! g/^[^']*'[^']*$/s/'//
+    silent normal! g/^[^']*'[^']*$/s/'//
     " clean blamk div
-    normal! g/^\s*[*-+]\s*$/d
+    silent normal! g/^\s*[*-+]\s*$/d
 endfunction
 
 
