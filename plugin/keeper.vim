@@ -126,7 +126,7 @@ let s:context = ''
 function s:load_help( help_program, search_term, context )
     if s:is_local_help( a:help_program )
         " Try local help first
-        let l:local_help_results = system( a:help_program )
+        silent let l:local_help_results = system( '2>/dev/null ' . a:help_program )
         if v:shell_error == 0 " || l:local_help_results !=# ''
             " if things look good then print
             call Render_help( a:help_program, a:search_term, a:context, l:local_help_results )
