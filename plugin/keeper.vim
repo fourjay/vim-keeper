@@ -75,10 +75,10 @@ function! s:extract_url(cline)
     " yes, this is incomplete, but in practice...
     let l:TLDs = [ 'com', 'net', 'org' ]
     " matchstr (at least in my environment) doesn't uork with match alternate
-    for tld in l:TLDs
+    for l:tld in l:TLDs
         let l:link_pattern = '[^ ][^ ]*[.]' . l:tld . '[:\/][/]*[^ ][^ ]*' 
         " echom "l:link_pattern is " . l:link_pattern
-        let url = matchstr( a:cline, l:link_pattern)
+        let l:url = matchstr( a:cline, l:link_pattern)
         " echom "with l:tld " . l:tld . "url is " . url
         if l:url !=# ''
             return l:url
@@ -126,7 +126,7 @@ let s:context = ''
 function s:load_help( help_program, search_term, context )
     if s:is_local_help( a:help_program )
         " Try local help first
-        silent let l:local_help_results = system( '2>/dev/null ' . a:help_program )
+        silent! let l:local_help_results = system( '2>/dev/null ' . a:help_program )
         if v:shell_error == 0 && ! empty(l:local_help_results)
             " if things look good then print
             call Render_help( a:help_program, a:search_term, a:context, l:local_help_results )
