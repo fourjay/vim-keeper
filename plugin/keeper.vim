@@ -3,8 +3,8 @@ if exists('g:loaded_keeper')
 endif
 let g:loaded_keeper = 1
 
-let s:save_cpo = &cpo
-set cpo&vim
+let s:save_cpo = &cpoptions
+set cpoptions&vim
 
 let s:base_path = expand('<sfile>:p:h')
 function! s:inline_help(...)
@@ -169,7 +169,7 @@ endfunction
 
 function! s:reset_window()
     let l:winnr = bufwinnr(s:helpbufname)
-    let current_buffer = bufwinnr('%')
+    let l:current_buffer = bufwinnr('%')
     if l:winnr < 1
         badd s:helpbufname
     else
@@ -177,7 +177,7 @@ function! s:reset_window()
         setlocal modifiable
         setlocal noreadonly
         silent normal! ggdG
-        wincmd w 
+        wincmd w
         only
     endif
 endfunction
@@ -451,7 +451,7 @@ function! s:alert(message)
 endfunction
 
 function s:suggest_words(A,C,P)
-    return [ expand("<cword>") ] + split( getline(".") )
+    return [ expand('<cword>') ] + split( getline('.') )
 endfunction
 
 " nmap <silent> <Plug>InlineHelp :call <SID>inline_help()<cr>
@@ -472,24 +472,24 @@ let s:man_programs = {
             \ }
 function! s:suggest_manprograms(...)
     " return the cword if there's alread a man program chosen
-    if a:2 =~ '\v^Xhelp \w+ '
-        return expand("<cword>") . "\n"
+    if a:2 =~? '\v^Xhelp \w+ '
+        return expand('<cword>') . "\n"
     endif
-    let l:list = ""
+    let l:list = ''
     let l:ft_match = get( s:man_programs, &filetype )
-    if &keywordprg != ""
+    if ! empty(&keywordprg)
         let l:ft_match = &keywordprg
     endif
-    if l:ft_match != ''
+    if ! empty(l:ft_match)
         if executable( l:ft_match )
             let l:list .= l:ft_match . "\n"
         endif
     endif
-    for ft_candidate in keys(s:man_programs)
-        let candidate = s:man_programs[ ft_candidate ]
-        if executable( candidate )
-            if l:ft_match != candidate
-                let l:list .= candidate . "\n"
+    for l:ft_candidate in keys(s:man_programs)
+        let l:candidate = s:man_programs[ l:ft_candidate ]
+        if executable( l:candidate )
+            if l:ft_match != l:candidate
+                let l:list .= l:candidate . "\n"
             endif
         endif
     endfor
@@ -514,5 +514,5 @@ function! s:format_external_help( ... )
 endfunction
 command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
-let &cpo = s:save_cpo 
+let &cpoptions = s:save_cpo 
 unlet s:save_cpo
