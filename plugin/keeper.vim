@@ -222,6 +222,7 @@ function! s:cleanup_webpage()
     if &filetype !=# b:parent_filetype
         execute ':setlocal filetype=' . b:parent_filetype . '.webhelp'
     endif
+    call s:syntax_adjustments()
 
     normal! 3G
     " call search( simple_search_term, 'w')
@@ -408,6 +409,12 @@ function! s:cleanup_apostrophes()
         silent normal!  % s/\<'s\>/''s/
         silent normal!  % s/\<'re\>/''re/
         silent normal!  % s/'[.]*$//
+endfunction
+
+function! s:syntax_adjustments()
+    if b:parent_filetype == 'perl'
+        syntax clear perlStringUnexpanded
+    endif
 endfunction
 
 function! s:generic_cleanup()
