@@ -405,9 +405,9 @@ function! s:cleanup_by_context(context)
 endfunction
 
 function! s:cleanup_apostrophes()
-        normal! silent! % s/\<'s\>/''s/
-        normal! silent! % s/\<'re\>/''re/
-        normal! silent! % s/'[.]*$//
+        silent normal!  % s/\<'s\>/''s/
+        silent normal!  % s/\<'re\>/''re/
+        silent normal!  % s/'[.]*$//
 endfunction
 
 function! s:generic_cleanup()
