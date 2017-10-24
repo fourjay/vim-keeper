@@ -412,7 +412,7 @@ function! s:cleanup_apostrophes() abort
 endfunction
 
 function! s:syntax_adjustments() abort
-    if b:parent_filetype == 'perl'
+    if b:parent_filetype ==# 'perl'
         syntax clear perlStringUnexpanded
     endif
 endfunction
