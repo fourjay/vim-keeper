@@ -474,6 +474,7 @@ command! -nargs=1 -complete=customlist,<SID>suggest_words Stackexchange call <SI
 let s:man_programs = {
             \   'sh'      : 'man',
             \   'perl'    : 'perldoc',
+            \   'php'     : 'pman',
             \   'python'  : 'pydoc',
             \   'ansible' : 'ansible-doc',
             \ }
