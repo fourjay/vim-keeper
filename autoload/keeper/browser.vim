@@ -118,10 +118,10 @@ function! keeper#browser#make_url(context, search_term) abort
 endfunction
 
 function! keeper#browser#syscall( context, search_term ) abort
-    let browser = keeper#browser#get()
-    let browser_call = keeper#browser#command()
-    let url = keeper#browser#make_url(a:context, a:search_term)
-    let prg =  browser_call .  " '" . url . "'"
-    return prg
+    let l:browser = keeper#browser#get()
+    let l:browser_call = keeper#browser#command()
+    let l:url = keeper#browser#make_url(a:context, a:search_term)
+    let l:prg =  l:browser_call .  " '" . l:url . "'"
+    return l:prg
 endfunction
 
