@@ -20,9 +20,9 @@ let s:browser_list = {
 
 function! keeper#browser#get() abort
     if len(s:browser) == 0
-        for browser in s:ordered_browsers
-            if executable( browser )
-                let s:browser = browser
+        for l:browser in s:ordered_browsers
+            if executable( l:browser )
+                let s:browser = l:browser
                 break
             endif
         endfor
@@ -96,25 +96,25 @@ function! keeper#browser#make_url(context, search_term) abort
     endif
     let l:context = a:context
     if l:context =~# '[.]'
-        for c in split(l:context, '[.]')
-            if has_key( s:URL_mappings, c )
-                let l:context = c
+        for l:c in split(l:context, '[.]')
+            if has_key( s:URL_mappings, l:c )
+                let l:context = l:c
                 break
             endif
         endfor
     endif
     if ! has_key( s:URL_mappings, l:context )
-        let url = s:ddg . '!' . l:context
+        let l:url = s:ddg . '!' . l:context
     else
-        let url = s:URL_mappings[ l:context ]
+        let l:url = s:URL_mappings[ l:context ]
     endif
     let l:prefix = ''
-    if ( match( url, 'duckduckgo', '')  != -1 )
-                \ || ( match( url, 'sourceid=navclient', '') != -1 )
+    if ( match( l:url, 'duckduckgo', '')  != -1 )
+                \ || ( match( l:url, 'sourceid=navclient', '') != -1 )
         let l:prefix = '+'
     endif
-    let url .= l:prefix . a:search_term
-    return url
+    let l:url .= l:prefix . a:search_term
+    return l:url
 endfunction
 
 function! keeper#browser#syscall( context, search_term ) abort
