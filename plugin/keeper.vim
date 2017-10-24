@@ -7,7 +7,7 @@ let s:save_cpo = &cpoptions
 set cpoptions&vim
 
 let s:base_path = expand('<sfile>:p:h')
-function! s:inline_help(...)
+function! s:inline_help(...) abort
     " Account for the special case non-external keywordprg
     if &keywordprg ==# ':help' && &filetype ==# 'vim'
         execute 'normal! K'
@@ -48,7 +48,7 @@ function! s:inline_help(...)
     call s:load_help(l:help_program, l:keyword, l:context)
 endfunction
 
-function! s:get_searchword()
+function! s:get_searchword() abort
     let l:cline = getline('.')
     let l:url = s:extract_url(l:cline)
     if l:url !=# ''
@@ -63,7 +63,7 @@ function! s:get_searchword()
     return expand("\<cword>")
 endfunction
 
-function! s:get_visual()
+function! s:get_visual() abort
     let l:saved_s_register = @s
     normal! gv"sy
     let l:selected = @s
@@ -71,7 +71,7 @@ function! s:get_visual()
     return l:selected
 endfunction
 
-function! s:extract_url(cline)
+function! s:extract_url(cline) abort
     " yes, this is incomplete, but in practice...
     let l:TLDs = [ 'com', 'net', 'org' ]
     " matchstr (at least in my environment) doesn't uork with match alternate
@@ -87,7 +87,7 @@ function! s:extract_url(cline)
     return ''
 endfunction
 
-function! s:get_cword_context()
+function! s:get_cword_context() abort
     let l:keyword_syngrp = synIDattr(synID(line('.'), col('.'), 0), 'name')
     if l:keyword_syngrp =~# 'SQL'
         return 'sql'
@@ -102,7 +102,7 @@ endfunction
 
 let s:browser_line_count = 0
 let s:timer = ''
-function! s:out_cb(jobid, msg)
+function! s:out_cb(jobid, msg) abort
     let s:browser_line_count += 1
     if s:browser_line_count == 10
         call s:alert('found results')
@@ -113,7 +113,7 @@ function! s:out_cb(jobid, msg)
     endif
     " echom "got OutHandler " . a:msg
 endfunction
-function! s:exit_handler(jobid, status)
+function! s:exit_handler(jobid, status) abort
     call s:alert('closing channel')
     let s:browser_line_count = 0
 endfunction
@@ -163,11 +163,11 @@ function s:load_help( help_program, search_term, context )
     call Render_help( a:help_program, a:search_term, a:context, l:external_help )
 endfunction
 
-function! s:is_local_help(help_program)
+function! s:is_local_help(help_program) abort
     return a:help_program !~# 'http'
 endfunction
 
-function! s:reset_window()
+function! s:reset_window() abort
     let l:winnr = bufwinnr(s:helpbufname)
     let l:current_buffer = bufwinnr('%')
     if l:winnr < 1
@@ -182,7 +182,7 @@ function! s:reset_window()
     endif
 endfunction
 
-function! s:display_help_window()
+function! s:display_help_window() abort
     let l:large_height = &lines * 2 / 3
     let l:winnr = bufwinnr(s:helpbufname)
     if l:winnr < 1
@@ -199,7 +199,7 @@ function s:clean_filetype( filetype )
     return substitute( a:filetype, '\..*', '', '')
 endfunction
 
-function! s:cleanup_webpage()
+function! s:cleanup_webpage() abort
     call s:alert('showing results')
     call s:display_help_window()
     set modifiable
@@ -240,7 +240,7 @@ function! s:cleanup_webpage()
 endfunction
 
 let s:helpbufname = '__HELP__'
-function! s:create_help(context)
+function! s:create_help(context) abort
     let l:large_height = &lines * 2 / 3
     let l:winnr = bufwinnr(s:helpbufname)
     if l:winnr < 1
@@ -256,7 +256,7 @@ function! s:create_help(context)
     " endif
 endfunction
 
-function! Render_help( help_program, search_term, context, results )
+function! Render_help( help_program, search_term, context, results ) abort
     " open split with reasonable height
     " let helpbufname = '__HELP__'
     let l:large_height = &lines * 2 / 3
@@ -309,7 +309,7 @@ function! Render_help( help_program, search_term, context, results )
     endif
 endfunction
 
-function! s:search_seek(direction)
+function! s:search_seek(direction) abort
     if a:direction ==# 'down'
         if keeper#stack#is_bottom()
             echoerr 'at first search'
@@ -328,12 +328,12 @@ endfunction
 nmap <silent> <Plug>SearchPrevious :call <SID>search_seek('down')<cr>
 nmap <silent> <Plug>SearchNext :call <SID>search_seek('up')<cr>
 
-function! s:wikipedia(...)
+function! s:wikipedia(...) abort
     let l:search_term = join( a:000, '+' )
     call s:inline_help( l:search_term, 'wiki')
 endfunction
 
-function! s:search_multiwords(...)
+function! s:search_multiwords(...) abort
     let l:search_term = join( a:000, '+' )
     if len(l:search_term) == 0
         let l:search_term = s:get_visual_selection()
@@ -346,7 +346,7 @@ function! s:search_multiwords(...)
     endif
 endfunction
 
-function! s:get_visual_selection()
+function! s:get_visual_selection() abort
     let l:saved_a = @a
     let l:saved_pos = getcurpos()
     " This moves cursor position
@@ -367,11 +367,11 @@ function! s:get_visual_selection()
     return l:found
 endfunction
 
-function! s:thesaurus(search_term)
+function! s:thesaurus(search_term) abort
     call s:inline_help( a:search_term, 'thesaurus')
 endfunction
 
-function! s:stackexchange(search_term)
+function! s:stackexchange(search_term) abort
     let l:search_filetype = &filetype
     if exists( 'b:parent_filetype' )
         let l:search_filetype = b:parent_filetype
@@ -379,15 +379,15 @@ function! s:stackexchange(search_term)
     call s:inline_help(a:search_term . '+' . l:search_filetype , 'stackexchange', l:search_filetype )
 endfunction
 
-function! KeeperURLRegisterGoogle(filetype, site)
+function! KeeperURLRegisterGoogle(filetype, site) abort
     call keeper#browser#register_google(a:filetype, a:site)
 endfunction
 
-function! KeeperURLRegisterDDG(filetype, bang)
+function! KeeperURLRegisterDDG(filetype, bang) abort
     call keeper#browser#register_(a:filetype, a:bang)
 endfunction
 
-function! s:cleanup_by_context(context)
+function! s:cleanup_by_context(context) abort
     if a:context ==# 'php'
         silent! 1,/Report a Bug/ d
         silent! 1,/Focus search box/ d
@@ -405,19 +405,19 @@ function! s:cleanup_by_context(context)
     endif
 endfunction
 
-function! s:cleanup_apostrophes()
+function! s:cleanup_apostrophes() abort
         silent normal!  % s/\<'s\>/''s/
         silent normal!  % s/\<'re\>/''re/
         silent normal!  % s/'[.]*$//
 endfunction
 
-function! s:syntax_adjustments()
+function! s:syntax_adjustments() abort
     if b:parent_filetype == 'perl'
         syntax clear perlStringUnexpanded
     endif
 endfunction
 
-function! s:generic_cleanup()
+function! s:generic_cleanup() abort
     " strip a single apostrophe in a line
     " This makes syntax highlighting more robust
     silent normal! g/^[^']*'[^']*$/s/'//
@@ -427,20 +427,20 @@ endfunction
 
 
 " HTML stipping functions
-function! s:crude_lexer()
+function! s:crude_lexer() abort
     " i.e. one tag per line
     normal! silent! % s/\(<[^>]*>\)/\r\1\r/g
 endfunction
 
-function! s:strip_scripts()
+function! s:strip_scripts() abort
     normal! silent! g/<script.*>/-1;/<\/script>/+1d
 endfunction
 
-function! s:delete_tags()
+function! s:delete_tags() abort
     normal! silent! g/^<[^>]*>$/d
 endfunction
 
-function! s:delete_blanks()
+function! s:delete_blanks() abort
     normal! silent! g/^[ ]*$/d
 endfunction
 
@@ -451,7 +451,7 @@ function s:strip_raw_html()
     call s:delete_blanks()
 endfunction
 
-function! s:alert(message)
+function! s:alert(message) abort
     echohl StatusLine
     echom a:message
     echohl None
@@ -478,7 +478,7 @@ let s:man_programs = {
             \   'python'  : 'pydoc',
             \   'ansible' : 'ansible-doc',
             \ }
-function! s:suggest_manprograms(...)
+function! s:suggest_manprograms(...) abort
     " return the cword if there's alread a man program chosen
     if a:2 =~? '\v^Xhelp \w+ '
         return expand('<cword>') . "\n"
