@@ -328,6 +328,14 @@ endfunction
 nmap <silent> <Plug>SearchPrevious :call <SID>search_seek('down')<cr>
 nmap <silent> <Plug>SearchNext :call <SID>search_seek('up')<cr>
 
+function! s:cheatsheet(...) abort
+    let l:search_term = join( a:000, '+' )
+    if l:search_term !~# '/'
+        let l:search_term = &filetype . '/' . l:search_term
+    endif
+    call s:inline_help( l:search_term, 'cheatsheet')
+endfunction
+
 function! s:wikipedia(...) abort
     let l:search_term = join( a:000, '+' )
     call s:inline_help( l:search_term, 'wiki')
@@ -470,6 +478,7 @@ command! -nargs=* -complete=customlist,<SID>suggest_words Help call <SID>search_
 command! -nargs=* -complete=customlist,<SID>suggest_words Wikipedia call <SID>wikipedia(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>thesaurus(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Stackexchange call <SID>stackexchange(<f-args>)
+command! -nargs=1 -complete=customlist,<SID>suggest_words Cheatsheet call <SID>cheatsheet(<f-args>)
 
 let s:man_programs = {
             \   'sh'      : 'man',

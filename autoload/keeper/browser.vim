@@ -78,7 +78,8 @@ let s:URL_mappings = {
             \'text'       :  s:ddg    . '!ahd',
             \'thesaurus'  :  'http://www.thesaurus.com/browse/',
             \'wiki'       :  s:ddg    . '!wikipedia',
-            \'stackexchange'  :  s:glucky    . 'site:stackexchange.com',
+            \'cheatsheet' : 'http://cheat.sh/',
+            \'stackexchange' :  s:glucky    . 'site:stackexchange.com',
             \}
 
 function! keeper#browser#register_google(filetype, site) abort
