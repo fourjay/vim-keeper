@@ -11,5 +11,5 @@
     "plugin/*"   : {"type"      : "plugin"},
     "ftplugin/*" : {"type"      : "ftplugin"},
     "syntax/*"   : {"type"      : "syntax"},
-    "doc/*.txt"  : {"type"      : "doc"},
+    "doc/*.txt"  : {"type"      : "doc"}
 }
