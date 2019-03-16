@@ -1,3 +1,15 @@
+" setup known state
+if exists('g:keeper_browser') 
+      " \ || &compatible 
+      " \ || version < 700}
+    finish
+endif
+let g:keeper_browser = '1'
+let s:save_cpo = &cpoptions
+set compatible&vim
+
+"echo 'main code'
+
 let s:browser = ''
 
 let s:ordered_browsers = [ 
@@ -125,4 +137,7 @@ function! keeper#browser#syscall( context, search_term ) abort
     let l:prg =  l:browser_call .  " '" . l:url . "'"
     return l:prg
 endfunction
+
+" Return vim to users choice
+let &cpoptions = s:save_cpo
 
