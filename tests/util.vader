@@ -1,0 +1,7 @@
+Given python (test python keyword suggestion):
+  def this_that()
+
+Execute (manwords suggestion list completes):
+  Assert
+  \ keeper#util#suggest_manprograms('', '', '') =~#
+  \ 'pydoc.*perldoc.*man.*ansible-doc'
