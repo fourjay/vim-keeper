@@ -480,39 +480,6 @@ command! -nargs=1 -complete=customlist,<SID>suggest_words Thesaurus call <SID>th
 command! -nargs=1 -complete=customlist,<SID>suggest_words Stackexchange call <SID>stackexchange(<f-args>)
 command! -nargs=1 -complete=customlist,<SID>suggest_words Cheatsheet call <SID>cheatsheet(<f-args>)
 
-let s:man_programs = {
-            \   'sh'      : 'man',
-            \   'perl'    : 'perldoc',
-            \   'php'     : 'pman',
-            \   'python'  : 'pydoc',
-            \   'ansible' : 'ansible-doc',
-            \ }
-function! s:suggest_manprograms(...) abort
-    " return the cword if there's alread a man program chosen
-    if a:2 =~? '\v^Xhelp \w+ '
-        return expand('<cword>') . "\n"
-    endif
-    let l:list = ''
-    let l:ft_match = get( s:man_programs, &filetype )
-    if ! empty(&keywordprg)
-        let l:ft_match = &keywordprg
-    endif
-    if ! empty(l:ft_match)
-        if executable( l:ft_match )
-            let l:list .= l:ft_match . "\n"
-        endif
-    endif
-    for l:ft_candidate in keys(s:man_programs)
-        let l:candidate = s:man_programs[ l:ft_candidate ]
-        if executable( l:candidate )
-            if l:ft_match != l:candidate
-                let l:list .= l:candidate . "\n"
-            endif
-        endif
-    endfor
-    return l:list
-endfunction
-
 " expose raw loadhelp
 function! s:format_external_help( ... )
     let l:context = &filetype
@@ -529,7 +496,7 @@ function! s:format_external_help( ... )
     endif
     call s:load_help(l:command . ' ' . l:keyword , l:keyword, l:context)
 endfunction
-command! -nargs=+ -complete=custom,<SID>suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
+command! -nargs=+ -complete=custom,keeper#util#suggest_manprograms XHelp call <SID>format_external_help(<f-args>)
 
 let &cpoptions = s:save_cpo 
 unlet s:save_cpo
