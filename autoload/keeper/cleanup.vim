@@ -62,9 +62,10 @@ function! keeper#cleanup#delete_blanks() abort
 endfunction
 
 function keeper#cleanup#strip_raw_html() call s:crude_lexer()
-    call s:strip_scripts()
-    call s:delete_tags()
-    call s:delete_blanks()
+    call keeper#cleanup#strip_scripts()
+    call keeper#cleanup#delete_tags()
+    call keeper#cleanup#delete_blanks()
 endfunction
+
 "# Return vim to users choice
 let &cpoptions = s:save_cpo
