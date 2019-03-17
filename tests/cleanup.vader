@@ -1,0 +1,20 @@
+Given (unbalanced apostrophes):
+  it's test'
+
+Execute (clean apostrophes):
+  call keeper#cleanup#apostrophes()
+
+Expect (apostrophes normalize):
+  it''s test
+
+Given (generic html artifact):
+  test' in the case
+   * 
+
+Execute (clean apostrophes):
+  call keeper#cleanup#generic()
+
+Expect (apostrophes normalize):
+  test in the case
+
+

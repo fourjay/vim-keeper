@@ -210,8 +210,8 @@ function! s:cleanup_webpage() abort
     if l:browser ==# 'curl' || l:browser ==# 'wget'
         call s:strip_raw_html()
     endif
-    call s:cleanup_by_context(s:clean_filetype( b:parent_filetype ) )
-    call s:generic_cleanup()
+    call keeper#cleanup#context(s:clean_filetype( b:parent_filetype ) )
+    call keeper#cleanup#generic()
 
     let l:simple_search_term = substitute( b:search_term, '+.*', '', '' )
 
@@ -289,8 +289,8 @@ function! Render_help( help_program, search_term, context, results ) abort
     if l:browser ==# 'curl' || l:browser ==# 'wget'
         call s:strip_raw_html()
     endif
-    call s:cleanup_by_context(a:context)
-    call s:generic_cleanup()
+    call keeper#cleaup#context(a:context)
+    call keeper#cleanup#generic()
 
     call append(0, '=====================================================================')
     call append(0, '              Ctrl-]:new search Ctrl-T:back')
@@ -395,44 +395,11 @@ function! KeeperURLRegisterDDG(filetype, bang) abort
     call keeper#browser#register_(a:filetype, a:bang)
 endfunction
 
-function! s:cleanup_by_context(context) abort
-    if a:context ==# 'php'
-        silent! 1,/Report a Bug/ d
-        silent! 1,/Focus search box/ d
-        call s:cleanup_apostrophes()
-    elseif a:context ==# 'perl'
-        silent! /^Download Perl/,/T • U • X$/ d
-        silent! /^Contact details/,$ d
-        silent! /^Please note: Many features of this site require JavaScript./,/Google Chrome/ d
-        call s:cleanup_apostrophes()
-    elseif a:context ==# 'thesaurus'
-        silent! 1,/^show \[all/ d
-        normal! silent! % s/ star$//
-        normal! silent! % s/^star$//
-        normal! silent! % s/star\>//
-    endif
-endfunction
-
-function! s:cleanup_apostrophes() abort
-        silent normal!  % s/\<'s\>/''s/
-        silent normal!  % s/\<'re\>/''re/
-        silent normal!  % s/'[.]*$//
-endfunction
-
 function! s:syntax_adjustments() abort
     if b:parent_filetype ==# 'perl'
         syntax clear perlStringUnexpanded
     endif
 endfunction
-
-function! s:generic_cleanup() abort
-    " strip a single apostrophe in a line
-    " This makes syntax highlighting more robust
-    silent normal! g/^[^']*'[^']*$/s/'//
-    " clean blamk div
-    silent normal! g/^\s*[*-+]\s*$/d
-endfunction
-
 
 " HTML stipping functions
 function! s:crude_lexer() abort
