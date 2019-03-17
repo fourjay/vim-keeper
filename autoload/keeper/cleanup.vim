@@ -61,7 +61,8 @@ function! keeper#cleanup#delete_blanks() abort
     silent! g/^[ ]*$/d
 endfunction
 
-function keeper#cleanup#strip_raw_html() call s:crude_lexer()
+function keeper#cleanup#strip_raw_html()
+    call keeper#cleanup#:crude_lexer()
     call keeper#cleanup#strip_scripts()
     call keeper#cleanup#delete_tags()
     call keeper#cleanup#delete_blanks()
