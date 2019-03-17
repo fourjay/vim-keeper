@@ -208,7 +208,7 @@ function! s:cleanup_webpage() abort
     " let browser = s:get_browser()
     let l:browser = keeper#browser#get()
     if l:browser ==# 'curl' || l:browser ==# 'wget'
-        call s:strip_raw_html()
+        call keeper#cleanup#strip_raw_html()
     endif
     call keeper#cleanup#context(s:clean_filetype( b:parent_filetype ) )
     call keeper#cleanup#generic()
@@ -399,31 +399,6 @@ function! s:syntax_adjustments() abort
     if b:parent_filetype ==# 'perl'
         syntax clear perlStringUnexpanded
     endif
-endfunction
-
-" HTML stipping functions
-function! s:crude_lexer() abort
-    " i.e. one tag per line
-    normal! silent! % s/\(<[^>]*>\)/\r\1\r/g
-endfunction
-
-function! s:strip_scripts() abort
-    normal! silent! g/<script.*>/-1;/<\/script>/+1d
-endfunction
-
-function! s:delete_tags() abort
-    normal! silent! g/^<[^>]*>$/d
-endfunction
-
-function! s:delete_blanks() abort
-    normal! silent! g/^[ ]*$/d
-endfunction
-
-function s:strip_raw_html()
-    call s:crude_lexer()
-    call s:strip_scripts()
-    call s:delete_tags()
-    call s:delete_blanks()
 endfunction
 
 function! s:alert(message) abort

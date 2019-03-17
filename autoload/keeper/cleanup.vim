@@ -8,6 +8,7 @@ let g:did_keeper_cleanup = '1'
 let s:save_cpo = &cpoptions
 set compatible&vim
 
+"# generic web page cleanup
 function! keeper#cleanup#context(context) abort
     if a:context ==# 'php'
         silent! 1,/Report a Bug/ d
@@ -33,12 +34,6 @@ function! keeper#cleanup#apostrophes() abort
         silent! % s/'[.]*$//
 endfunction
 
-function! s:syntax_adjustments() abort
-    if b:parent_filetype ==# 'perl'
-        syntax clear perlStringUnexpanded
-    endif
-endfunction
-
 function! keeper#cleanup#generic() abort
     " strip a single apostrophe in a line
     " This makes syntax highlighting more robust
@@ -48,23 +43,28 @@ function! keeper#cleanup#generic() abort
 endfunction
 
 
-" HTML stipping functions
-function! s:crude_lexer() abort
+"# HTML stipping functions
+function! s:cleanup#crude_lexer() abort
     " i.e. one tag per line
-    normal! silent! % s/\(<[^>]*>\)/\r\1\r/g
+    silent! % s/\(<[^>]*>\)/\r\1\r/g
 endfunction
 
-function! s:strip_scripts() abort
-    normal! silent! g/<script.*>/-1;/<\/script>/+1d
+function! keeper#cleanup#strip_scripts() abort
+    silent! g/<script.*>/-1;/<\/script>/+1d
 endfunction
 
-function! s:delete_tags() abort
-    normal! silent! g/^<[^>]*>$/d
+function! keeper#cleanup#delete_tags() abort
+    silent! g/^<[^>]*>$/d
 endfunction
 
-function! s:delete_blanks() abort
-    normal! silent! g/^[ ]*$/d
+function! keeper#cleanup#delete_blanks() abort
+    silent! g/^[ ]*$/d
 endfunction
 
-" Return vim to users choice
+function keeper#cleanup#strip_raw_html() call s:crude_lexer()
+    call s:strip_scripts()
+    call s:delete_tags()
+    call s:delete_blanks()
+endfunction
+"# Return vim to users choice
 let &cpoptions = s:save_cpo
