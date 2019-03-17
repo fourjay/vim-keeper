@@ -44,7 +44,7 @@ endfunction
 
 
 "# HTML stipping functions
-function! s:cleanup#crude_lexer() abort
+function! keeper#cleanup#crude_lexer() abort
     " i.e. one tag per line
     silent! % s/\(<[^>]*>\)/\r\1\r/g
 endfunction
