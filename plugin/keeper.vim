@@ -287,7 +287,7 @@ function! Render_help( help_program, search_term, context, results ) abort
     " let browser = s:get_browser()
     let l:browser = keeper#browser#get()
     if l:browser ==# 'curl' || l:browser ==# 'wget'
-        call s:strip_raw_html()
+        call keeper#cleanup#strip_raw_html()
     endif
     call keeper#cleaup#context(a:context)
     call keeper#cleanup#generic()
