@@ -289,7 +289,7 @@ function! Render_help( help_program, search_term, context, results ) abort
     if l:browser ==# 'curl' || l:browser ==# 'wget'
         call keeper#cleanup#strip_raw_html()
     endif
-    call keeper#cleaup#context(a:context)
+    call keeper#cleanup#context(a:context)
     call keeper#cleanup#generic()
 
     call append(0, '=====================================================================')
