@@ -9,7 +9,9 @@ set cpoptions&vim
 let s:base_path = expand('<sfile>:p:h')
 function! s:inline_help(...) abort
     " Account for the special case non-external keywordprg
-    if &keywordprg ==# ':help' && &filetype ==# 'vim'
+    if &keywordprg ==# ':help' 
+                \ && &filetype ==# 'vim'
+                \ && a:0 != 2
         execute 'normal! K'
         return
     endif
