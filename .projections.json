@@ -8,6 +8,7 @@
         "alternate" : "tests/{}.vader"
     },
     "README.md"  : {"type"      : "readme"},
+    "plugin/keeper.vim"   : {"type"      : "plugin"},
     "plugin/*"   : {"type"      : "plugin"},
     "ftplugin/*" : {"type"      : "ftplugin"},
     "syntax/*"   : {"type"      : "syntax"},
