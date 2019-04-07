@@ -6,7 +6,7 @@ if exists('g:keeper_browser')
 endif
 let g:keeper_browser = '1'
 let s:save_cpo = &cpoptions
-set compatible&vim
+set cpoptions&vim
 
 "echo 'main code'
 
