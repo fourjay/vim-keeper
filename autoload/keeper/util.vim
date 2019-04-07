@@ -6,7 +6,7 @@ if exists('g:did_keeper_util')
 endif
 let g:did_keeper_util = '1'
 let s:save_cpo = &cpoptions
-set compatible&vim
+set cpoptions&vim
 
 let s:man_programs = {
             \   'sh'      : 'man',
