@@ -6,7 +6,7 @@ if exists('g:did_keeper_cleanup')
 endif
 let g:did_keeper_cleanup = '1'
 let s:save_cpo = &cpoptions
-set compatible&vim
+set cpoptions&vim
 
 "# generic web page cleanup
 function! keeper#cleanup#context(context) abort
