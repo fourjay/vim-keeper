@@ -57,8 +57,8 @@ function! keeper#browser#command_list() abort
     let l:browser = keeper#browser#get()
 endfunction
 
-let s:ddg = 'http://duckduckgo.com/?q='
-let s:glucky ='http://www.google.com/search?sourceid=navclient&btnI=I&q='
+let s:ddg = 'https://duckduckgo.com/?q='
+let s:glucky ='https://www.google.com/search?sourceid=navclient&btnI=I&q='
 
 let s:URL_mappings = {
             \'ansible'    :  s:glucky . 'site:docs.ansible.com',
